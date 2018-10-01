@@ -5,9 +5,21 @@
 	margin-top: 20px;
 }
 
+.history-panel {
+	margin-top: 20px;
+}
+
+.properties-panel {
+	margin-left: 20px;
+}
+
+.properties-table {
+	margin-top: 20px;
+}
+
 #chart {
 	border: 1px solid grey;
-	min-height: 600px;
+	min-height: 700px;
 
 }
 
@@ -17,14 +29,19 @@
 
 /* Topology Panel Canvas Styling */
 
-circle {
+circle.contour {
+	fill-opacity:0.02;
+}
+
+
+circle.node {
 	fill:steelblue;
 }
 
-circle:hover {
+circle.node:hover {
 	fill:#9999ff;
 }
 
-circle.selected {
+circle.node.selected {
 	fill:#ddddff;
 }
