@@ -9,7 +9,7 @@ function NetVis(DOMelement) {
 		nodeDefaultRadius: 10
 	};
 
-	self.Nodes = new NetVisModelNodes();
+	self.Nodes = new NetVisNodes();
 	self.View = new NetVisView();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
@@ -20,7 +20,7 @@ function NetVis(DOMelement) {
 		}
 		if (srcJSON.nodes) {
 			for (var nodeKey in srcJSON.nodes) {
-				self.Nodes.loadNode(srcJSON.nodes[nodeKey]);
+				self.Nodes.load(srcJSON.nodes[nodeKey]);
 			}
 		}
 
@@ -42,7 +42,7 @@ function NetVis(DOMelement) {
 
 
 
-		nodes = canvas.selectAll("circle.node").data(self.Nodes._nodesArray).enter().append("circle");
+		nodes = canvas.selectAll("circle.node").data(self.Nodes.asArray).enter().append("circle");
 
 		var syncPositions = function() {
 			return	nodes
@@ -122,6 +122,7 @@ function NetVis(DOMelement) {
 
 	self.resetPositions = function() {
 		self.Nodes.resetPositions();
+		self._selected = self;
 		self.Render();
 	};
 }
