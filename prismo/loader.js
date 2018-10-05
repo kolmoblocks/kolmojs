@@ -1,6 +1,6 @@
 $(function() {
   var Prismo = new NetVis(),
-    SrcURL="example/example.json";
+    SrcURL="example/mercury.json";
 
 
   $("#reset-positions").click(Prismo.resetPositions);
@@ -10,7 +10,7 @@ $(function() {
   		return;
   	}
   	Prismo.View.Logger.info("Succesfully resolved " + SrcURL);
-    Prismo.jsonAdapter(json);
+    Prismo.parse(json);
     Prismo.View.Logger.info(Prismo);
     Prismo.Render();
   });
