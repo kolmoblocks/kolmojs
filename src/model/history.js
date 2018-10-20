@@ -1,10 +1,11 @@
 // Define history model and handlers
 
 
-NetVisHistory = function() {
-	BaseNetVisModel.apply(this); // History class inherits from baseModel
-	
-	this.loadEvent = function(obj, momentTime) {
+NetVis.prototype._constructNetVisHistory = function() {
+	var self = this;
+	self.history = new BaseNetVisModel(this); // History class inherits from baseModel
+
+	self.history.loadEvent = function(obj, momentTime) {
 		obj._t = momentTime;
 		obj.time = momentTime.toISOString();
 		// eventID to be unique and contain timestamp
@@ -28,7 +29,7 @@ NetVisHistory = function() {
 		while (lowI < highI) {
 			cur = Math.floor((highI + lowI) /2);
 			if (this.asArray[cur]._t.isBefore(obj._t)) {
-				lowI = cur + 1;	
+				lowI = cur + 1;
 			} else {
 				highI = cur;
 			}
@@ -37,7 +38,7 @@ NetVisHistory = function() {
 	};
 
 
-	this.updateAll = function() {
+	self.history.updateAll = function() {
 		// create interval instances from events array
 		if (!this.asArray) {
 			// no events or not initialized
@@ -52,34 +53,43 @@ NetVisHistory = function() {
 		startEvents = [this.asArray[cur]];
 		cur ++;
 		while (cur < this.asArray.length -1 && !this.asArray[cur]._t.isAfter(startEvents[0]._t)) {
-			startEvents.push(this.asArray[cur]);			
+			startEvents.push(this.asArray[cur]);
 			cur++;
 		}
 
+		// traversing all simultanious events into events for interval boundaries
 		while (cur < this.asArray.length) {
 			finishEvents =[this.asArray[cur]];
 			cur++;
 			while (cur < this.asArray.length -1 && !this.asArray[cur]._t.isAfter(finishEvents[0]._t)) {
-				finishEvents.push(this.asArray[cur]);			
+				finishEvents.push(this.asArray[cur]);
 				cur++;
 			}
 
 			curInterval = new NetVisInterval(startEvents, finishEvents, curInterval);
+			if (this.intervals.length === 0) {
+				console.log("Whoop-doop: ", self.Nodes.asArray[i]);
+				for(var i=0; i< self.Nodes.asArray.length; i++) {
+					if (self.Nodes.asArray[i].permanentNode) {
+						curInterval.nodes.push(self.Nodes.asArray[i]);
+					}
+				}
+			}
 			this.intervals.push(curInterval);
 			startEvents = finishEvents;
 		}
 
 
 		if (this.intervals) {
-			this.selectedTimeInterval = this.intervals[0]; 
+			this.selectedTimeInterval = this.intervals[0];
 		}
 	};
 
 
 	// add default time margin moments
-	this.loadEvent({"tag":"end"},moment("3000-01-01"));	
-	this.loadEvent({"tag":"start"},moment("1970-01-01"));	
-	this.updateAll();
+	self.history.loadEvent({"tag":"end"},moment("3000-01-01"));
+	self.history.loadEvent({"tag":"start"},moment("1970-01-01"));
+	self.history.updateAll();
 
 
 };
