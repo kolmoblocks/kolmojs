@@ -95,7 +95,6 @@ NetVis.prototype._constructNetVisHistory = function() {
 
 			curInterval = new NetVisInterval(startEvents, finishEvents, curInterval);
 			if (this.intervals.length === 0) {
-				console.log("Whoop-doop: ", self.Nodes.asArray[i]);
 				for(var i=0; i< self.Nodes.asArray.length; i++) {
 					if (self.Nodes.asArray[i].permanentNode) {
 						curInterval.nodes.push(self.Nodes.asArray[i]);
@@ -133,7 +132,7 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 	this.ends = this._ends.toISOString();
 
 	if (prevInterval) {
-		this.messages = prevInterval.messages.slice(0); // copying array instance
+		this.messages = prevInterval.messages.slice(0); // js way of copying array instance
 		this.nodes = 	prevInterval.nodes.slice(0);
 	} else {
 		this.messages = [];
@@ -143,13 +142,23 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 	for(var i=0; i< this.startEvents.length; i++) {
 		var event = this.startEvents[i];
 		switch (event.event) {
+			case "nodeEntered":
+				this.nodes.push(event.node);
+				break;
+			case "nodeExited":
+				for(var j = this.nodes.length - 1; j >= 0; j--) {
+					// if(this.nodes[j].id === event.node.id) {
+					// 	this.nodes.splice(j, 1);
+					// }
+				}
+				break;
 			case "messageSent":
 				this.messages.push(event.message);
 				break;
 			case "messageReceived":
-				for(var j = this.messages.length - 1; j >= 0; j--) {
-				    if(this.messages[j].id === event.message.id) {
-				       this.messages.splice(j, 1);
+				for(var h = this.messages.length - 1; h >= 0; h--) {
+				    if(this.messages[h].id === event.message.id) {
+				       this.messages.splice(h, 1);
 				    }
 				}
 		}
@@ -270,6 +279,9 @@ NetVis.prototype.parse = function(srcJSON) {
 			case "nodeEntered":
 				this._parseNodeEntered(srcJSON[i]);
 				break;
+			case "nodeExited":
+					this._parseNodeExited(srcJSON[i]);
+					break;
 			case "messageSent":
 				this._parseMessageSent(srcJSON[i]);
 				break;
@@ -345,6 +357,17 @@ NetVis.prototype._parseNodeEntered = function(src) {
   var e = this.history.loadEvent(src, moment(src.time));
   return r;
 };
+/////////////////////////////////////////////////////////////// parse NodeExited event
+
+NetVis.prototype._parseNodeExited = function(src) {
+  var r = this.Nodes.load({
+    "id": src.name
+  });
+  console.log("parseNodeExited reports node: ", r, " from event record: ", src);
+  src.node = r;
+  var e = this.history.loadEvent(src, moment(src.time));
+  return r;
+};
 /////////////////////////////////////////////////////////////// view/message.js
 // Defines render() function for messages /////////////////////////////////////////////////////////////// view.js defines Netvis.view
 
@@ -379,7 +402,7 @@ NetVis.prototype.initView = function() {
        	self.selectedTimeInterval = self.history.intervals[value -1];
        	self._selected = self.selectedTimeInterval;
        	$('#timestamp').html(value);
-		self.render();       	
+		self.render();
        }
      });
 
@@ -395,17 +418,17 @@ NetVis.prototype.render = function() {
 
 	self.Nodes.asArray.forEach(function(el) {
 		    	if (!el._xAbs) {
-		    		el._xAbs = el._x*width; 
+		    		el._xAbs = el._x*width;
 			    }
 		    	if (!el._yAbs) {
 			    	el._yAbs = el._y*width;
-		    	} 
+		    	}
 	});
 
 
-	
+
 	$(self._topologyPanel).empty();
-	canvas = d3.select(self._topologyPanel) 
+	canvas = d3.select(self._topologyPanel)
 		.append("svg")
 		.attr("width",$(self._topologyPanel).width())
 		.attr("height",$(self._topologyPanel).height());
@@ -428,7 +451,7 @@ NetVis.prototype.render = function() {
 		.on("click",function(d) { self._selected = d; self.render();})
 		.attr('class','messageAnimation');
 
-	nodes = canvas.selectAll("circle.node").data(self.Nodes.asArray)
+	nodes = canvas.selectAll("circle.node").data(self.selectedTimeInterval.nodes)
 		.enter().append("circle")
 	    .on("click",function(d) { self._selected = d; self.render();})
 	    .attr('class','node');
@@ -459,7 +482,7 @@ NetVis.prototype.render = function() {
      	});
      	syncPositions();
      });
-	
+
 	syncPositions()
 	    .attr("r",self.config.nodeDefaultRadius)
 	    .call(d3.behavior.drag()
@@ -505,7 +528,7 @@ NetVis.prototype.render = function() {
 	   if (key.charAt(0) === "_") {
 	   	// private attribute, ignoring
 	   	continue;
-	   }		   
+	   }
 	   attributes.push({"attr": key, "value":self._selected[key], "obj": typeof(self._selected[key]) == "object"});
 	}
 
@@ -522,5 +545,5 @@ NetVis.prototype.render = function() {
     rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return "more.."; })
         .on("click", function(d) {self._selected = d.value; self.render();});
 
-     	
+
 };
