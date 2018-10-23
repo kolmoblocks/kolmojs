@@ -6,6 +6,7 @@ function NetVis(Options) {
 	self._topologyPanel = Options.topologyPanel || "#chart";
 	self._historyPanel = Options.historyPanel || "#history";
 	self._timePanel = Options.timePanel || "#timestamp";
+	self.playmode = true;
 
 	self.config = {
 		nodeDefaultDistance: 30,
@@ -34,6 +35,11 @@ function NetVis(Options) {
 		if (this.history.intervals) {
 			this.selectedTimeInterval = this.history.intervals[0];
 		}
+	};
+
+	self.play = function() {
+		self.playmode = !self.playmode;
+		self.render();
 	};
 }
 
