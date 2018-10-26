@@ -28,7 +28,7 @@ BaseNetVisModel = function() {
 };/////////////////////////////////////////////////////////////// Define history model and handlers
 
 
-NetVis.prototype._constructNetVisHistory = function() {
+NetVis.prototype._constructHistory = function() {
 	var self = this;
 	self.history = new BaseNetVisModel(this); // History class inherits from baseModel
 
@@ -95,9 +95,9 @@ NetVis.prototype._constructNetVisHistory = function() {
 
 			curInterval = new NetVisInterval(startEvents, finishEvents, curInterval);
 			if (this.intervals.length === 0) {
-				for(var i=0; i< self.Nodes.asArray.length; i++) {
-					if (self.Nodes.asArray[i].permanentNode) {
-						curInterval.nodes.push(self.Nodes.asArray[i]);
+				for(var i=0; i< self.nodes.asArray.length; i++) {
+					if (self.nodes.asArray[i].permanentNode) {
+						curInterval.nodes.push(self.nodes.asArray[i]);
 					}
 				}
 			}
@@ -121,8 +121,17 @@ NetVis.prototype._constructNetVisHistory = function() {
 
 
 	self.history.next = function() {
-		if (self.selectedTimeInterval && self.selectedTimeInterval.next) {
-			self.selectedTimeInterval = self.selectedTimeInterval.next;
+		if (self.selectedTimeInterval) {
+			if (self.selectedTimeInterval.next) {
+				self.selectedTimeInterval = self.selectedTimeInterval.next;
+			} else {
+				// reached the end og the timeline, loop to beginning if repeat mode on
+				if (self.config.loopPlay) {
+					self.selectedTimeInterval = this.intervals[0];
+				} else {
+					self.play(); // toggle off the play mode
+				}
+			}
 		}
 	};
 
@@ -192,14 +201,18 @@ NetVisMessages = function() {
 	};
 };/////////////////////////////////////////////////////////////// Define network node model and handlers
 
-NetVisNodes = function() {
+NetVis.prototype._constructNodes = function() {
 	var self = this;
-	BaseNetVisModel.apply(self); // Nodes class inherits from baseModel
 
-	superLoad = self.load;
-	self.load = function(srcObject, assignID) {
+	self.nodes = new BaseNetVisModel(); // nodes class inherits from baseModel
+	self.nodes._root = self;
+	self.nodes._label = "nodes";
+	self.nodes._propertiesAlias = self.nodes._asObject;
+
+	superLoad = self.nodes.load;
+	self.nodes.load = function(srcObject, assignID) {
 		// if a new node instance and "permanentNode" is not false, will make the
-		if (srcObject.id && !self._asObject[srcObject.id]) {
+		if (srcObject.id && !self.nodes._asObject[srcObject.id]) {
 			if (typeof srcObject.permanentNode === 'undefined') {
 				srcObject.permanentNode = true;
 			}
@@ -207,23 +220,23 @@ NetVisNodes = function() {
 		}
 	};
 
-	self.updateAll = function() {
+	self.nodes.updateAll = function() {
 		// generate default node's positioning coordinates on canvas
-		if (self.asArray.length === 0) {
+		if (self.nodes.asArray.length === 0) {
 			// when no nodes loaded, computing arc variable would involve dividing by zero
 			return;
 		}
-		var	arc = 2 * Math.PI / self.asArray.length;
-		for (var i=0; i< self.asArray.length; i++) {
-			self.asArray[i]._x = 0.5 + 0.3 * Math.sin(i*arc);
-			self.asArray[i]._y = 0.5 - 0.3 * Math.cos(i*arc);
+		var	arc = 2 * Math.PI / self.nodes.asArray.length;
+		for (var i=0; i< self.nodes.asArray.length; i++) {
+			self.nodes.asArray[i]._x = 0.5 + 0.3 * Math.sin(i*arc);
+			self.nodes.asArray[i]._y = 0.5 - 0.3 * Math.cos(i*arc);
 		}
 	};
 
-	self.resetPositions = function() {
-		for (var i=0; i< self.asArray.length; i++) {
-			delete self.asArray[i]._xAbs;
-			delete self.asArray[i]._yAbs;
+	self.nodes.resetPositions = function() {
+		for (var i=0; i< self.nodes.asArray.length; i++) {
+			delete self.nodes.asArray[i]._xAbs;
+			delete self.nodes.asArray[i]._yAbs;
 		}
 	};
 };
@@ -239,25 +252,26 @@ function NetVis(Options) {
 
 	self.config = {
 		nodeDefaultDistance: 30,
-		nodeDefaultRadius: 10
+		nodeDefaultRadius: 10,
+		loopPlay: false
 	};
 
-	self.Nodes = new NetVisNodes();
+	self._constructNodes();
 	self.messages = new NetVisMessages();
-	self._constructNetVisHistory();
+	self._constructHistory();
 	self.View = new NetVisView();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
 
 	self.resetPositions = function() {
-		self.Nodes.resetPositions();
+		self.nodes.resetPositions();
 		self._selected = self;
 		self.render();
 	};
 
 
 	self.updateAll = function() {
-		this.Nodes.updateAll();
+		this.nodes.updateAll();
 		this.messages.updateAll();
 		this.history.updateAll();
 
@@ -278,6 +292,12 @@ function NetVis(Options) {
 		}
 		self.render();
 	};
+
+	self.loopPlay = function() {
+		self.config.loopPlay = !self.config.loopPlay;
+		self.render();
+	};
+
 }
 
 
@@ -360,12 +380,12 @@ NetVis.prototype._parseMessageSent = function(src) {
 		return r;
 	}
 
-	this.Nodes.load({"id":src.loggerID});
-	r.source = this.Nodes._asObject[src.loggerID];
+	this.nodes.load({"id":src.loggerID});
+	r.source = this.nodes._asObject[src.loggerID];
 
 
-	this.Nodes.load({"id":src.destinationNode});
-	r.destination = this.Nodes._asObject[src.destinationNode];
+	this.nodes.load({"id":src.destinationNode});
+	r.destination = this.nodes._asObject[src.destinationNode];
 
 	src.message = r;
 	var e = this.history.loadEvent(src, moment(src.time));
@@ -376,7 +396,7 @@ NetVis.prototype._parseMessageSent = function(src) {
 /////////////////////////////////////////////////////////////// parse NodeEntered event
 
 NetVis.prototype._parseNodeEntered = function(src) {
-  var r = this.Nodes.load({
+  var r = this.nodes.load({
     "id": src.name,
     "permanentNode": false
   });
@@ -388,7 +408,7 @@ NetVis.prototype._parseNodeEntered = function(src) {
 /////////////////////////////////////////////////////////////// parse NodeExited event
 
 NetVis.prototype._parseNodeExited = function(src) {
-  var r = this.Nodes.load({
+  var r = this.nodes.load({
     "id": src.name
   });
   console.log("parseNodeExited reports node: ", r, " from event record: ", src);
@@ -402,7 +422,7 @@ NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
 
-  self.Nodes.asArray.forEach(function(el) {
+  self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
       el._xAbs = el._x*width;
     }
@@ -500,16 +520,40 @@ NetVis.prototype.render = function() {
   .attr('class','message selected');
 
 
+  // Render selected item graph position
+  $("#tree").empty();
+  var cur = self._selected;
+  position = [];
+  while (cur._root) {
+    position.unshift({"label": cur._label, "obj": cur});
+    cur = cur._root;
+  }
+
+  position.unshift({"label":"Home", "obj": self});
+  d3.select("#tree")
+    .selectAll("li")
+    .data(position)
+    .enter()
+    .append("li")
+    .append("a")
+    .text(function(d) {return d.label;})
+    .on("click", function(d) {self._selected = d.obj; self.render(); });
 
   // Render properties-table
   $("#properties-tbody").empty();
   attributes = [];
-  for (var key in self._selected) {
-    if (!self._selected.hasOwnProperty(key)) {
+  if (self._selected._propertiesAlias) {
+    objTraversed = self._selected._propertiesAlias;
+  } else {
+    objTraversed = self._selected;
+  }
+
+  for (var key in objTraversed) {
+    if (!objTraversed.hasOwnProperty(key)) {
       // inherited attribute, ignoring
       continue;
     }
-    if (typeof(self._selected[key]) == "function") {
+    if (typeof(objTraversed[key]) == "function") {
       // attribute is a function, ignoring
       continue;
     }
@@ -517,7 +561,7 @@ NetVis.prototype.render = function() {
       // private attribute, ignoring
       continue;
     }
-    attributes.push({"attr": key, "value":self._selected[key], "obj": typeof(self._selected[key]) == "object"});
+    attributes.push({"attr": key, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object"});
   }
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
@@ -525,10 +569,10 @@ NetVis.prototype.render = function() {
   rows.append("td").text(function(d) {return d.attr; });
 
   rows.filter(function(d) {return !d.obj;})
-  .append("td")
-  .append("div")
-  .attr("class","properties-column")
-  .text(function(d) {return d.value; });
+    .append("td")
+    .append("div")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; });
 
   rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return "more.."; })
   .on("click", function(d) {self._selected = d.value; self.render();});
@@ -540,11 +584,17 @@ NetVis.prototype.render = function() {
     $("#play").find("span").attr("class","glyphicon glyphicon-play");
   }
 
+  if (self.config.loopPlay) {
+    $("#repeat").attr("class","btn btn-danger");
+  } else {
+    $("#repeat").attr("class","btn btn-active");
+  }
+
 
   // move time-controls panel
   $("#history")
-  .val(self.selectedTimeInterval.i + 1)
-  .change();
+    .val(self.selectedTimeInterval.i + 1)
+    .change();
 
 };
 /////////////////////////////////////////////////////////////// view.js defines Netvis.view

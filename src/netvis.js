@@ -10,25 +10,26 @@ function NetVis(Options) {
 
 	self.config = {
 		nodeDefaultDistance: 30,
-		nodeDefaultRadius: 10
+		nodeDefaultRadius: 10,
+		loopPlay: false
 	};
 
-	self.Nodes = new NetVisNodes();
+	self._constructNodes();
 	self.messages = new NetVisMessages();
-	self._constructNetVisHistory();
+	self._constructHistory();
 	self.View = new NetVisView();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
 
 	self.resetPositions = function() {
-		self.Nodes.resetPositions();
+		self.nodes.resetPositions();
 		self._selected = self;
 		self.render();
 	};
 
 
 	self.updateAll = function() {
-		this.Nodes.updateAll();
+		this.nodes.updateAll();
 		this.messages.updateAll();
 		this.history.updateAll();
 
@@ -49,6 +50,12 @@ function NetVis(Options) {
 		}
 		self.render();
 	};
+
+	self.loopPlay = function() {
+		self.config.loopPlay = !self.config.loopPlay;
+		self.render();
+	};
+
 }
 
 

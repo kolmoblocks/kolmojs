@@ -1,7 +1,7 @@
 // Define history model and handlers
 
 
-NetVis.prototype._constructNetVisHistory = function() {
+NetVis.prototype._constructHistory = function() {
 	var self = this;
 	self.history = new BaseNetVisModel(this); // History class inherits from baseModel
 
@@ -68,9 +68,9 @@ NetVis.prototype._constructNetVisHistory = function() {
 
 			curInterval = new NetVisInterval(startEvents, finishEvents, curInterval);
 			if (this.intervals.length === 0) {
-				for(var i=0; i< self.Nodes.asArray.length; i++) {
-					if (self.Nodes.asArray[i].permanentNode) {
-						curInterval.nodes.push(self.Nodes.asArray[i]);
+				for(var i=0; i< self.nodes.asArray.length; i++) {
+					if (self.nodes.asArray[i].permanentNode) {
+						curInterval.nodes.push(self.nodes.asArray[i]);
 					}
 				}
 			}
@@ -94,8 +94,17 @@ NetVis.prototype._constructNetVisHistory = function() {
 
 
 	self.history.next = function() {
-		if (self.selectedTimeInterval && self.selectedTimeInterval.next) {
-			self.selectedTimeInterval = self.selectedTimeInterval.next;
+		if (self.selectedTimeInterval) {
+			if (self.selectedTimeInterval.next) {
+				self.selectedTimeInterval = self.selectedTimeInterval.next;
+			} else {
+				// reached the end og the timeline, loop to beginning if repeat mode on
+				if (self.config.loopPlay) {
+					self.selectedTimeInterval = this.intervals[0];
+				} else {
+					self.play(); // toggle off the play mode
+				}
+			}
 		}
 	};
 

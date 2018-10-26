@@ -3,7 +3,7 @@ NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
 
-  self.Nodes.asArray.forEach(function(el) {
+  self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
       el._xAbs = el._x*width;
     }
@@ -101,16 +101,40 @@ NetVis.prototype.render = function() {
   .attr('class','message selected');
 
 
+  // Render selected item graph position
+  $("#tree").empty();
+  var cur = self._selected;
+  position = [];
+  while (cur._root) {
+    position.unshift({"label": cur._label, "obj": cur});
+    cur = cur._root;
+  }
+
+  position.unshift({"label":"Home", "obj": self});
+  d3.select("#tree")
+    .selectAll("li")
+    .data(position)
+    .enter()
+    .append("li")
+    .append("a")
+    .text(function(d) {return d.label;})
+    .on("click", function(d) {self._selected = d.obj; self.render(); });
 
   // Render properties-table
   $("#properties-tbody").empty();
   attributes = [];
-  for (var key in self._selected) {
-    if (!self._selected.hasOwnProperty(key)) {
+  if (self._selected._propertiesAlias) {
+    objTraversed = self._selected._propertiesAlias;
+  } else {
+    objTraversed = self._selected;
+  }
+
+  for (var key in objTraversed) {
+    if (!objTraversed.hasOwnProperty(key)) {
       // inherited attribute, ignoring
       continue;
     }
-    if (typeof(self._selected[key]) == "function") {
+    if (typeof(objTraversed[key]) == "function") {
       // attribute is a function, ignoring
       continue;
     }
@@ -118,7 +142,7 @@ NetVis.prototype.render = function() {
       // private attribute, ignoring
       continue;
     }
-    attributes.push({"attr": key, "value":self._selected[key], "obj": typeof(self._selected[key]) == "object"});
+    attributes.push({"attr": key, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object"});
   }
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
@@ -126,10 +150,10 @@ NetVis.prototype.render = function() {
   rows.append("td").text(function(d) {return d.attr; });
 
   rows.filter(function(d) {return !d.obj;})
-  .append("td")
-  .append("div")
-  .attr("class","properties-column")
-  .text(function(d) {return d.value; });
+    .append("td")
+    .append("div")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; });
 
   rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return "more.."; })
   .on("click", function(d) {self._selected = d.value; self.render();});
@@ -141,10 +165,16 @@ NetVis.prototype.render = function() {
     $("#play").find("span").attr("class","glyphicon glyphicon-play");
   }
 
+  if (self.config.loopPlay) {
+    $("#repeat").attr("class","btn btn-danger");
+  } else {
+    $("#repeat").attr("class","btn btn-active");
+  }
+
 
   // move time-controls panel
   $("#history")
-  .val(self.selectedTimeInterval.i + 1)
-  .change();
+    .val(self.selectedTimeInterval.i + 1)
+    .change();
 
 };
