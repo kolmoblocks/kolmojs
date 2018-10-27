@@ -1,9 +1,14 @@
 // BaseNetVisModel contains common elements shared among all the NetVis models
 // NetVis.nodes, NetVis.messages, NetVis.history inherit from BaseNetVisModel
 
-BaseNetVisModel = function() {
+BaseNetVisModel = function(root, label) {
 	var self = this;
 	self._asObject = {}; // used to store info on nodes
+
+	self._propertiesAlias = self._asObject;
+	self._root = root;
+	self._label = label;
+
 	self.asArray = []; // array of node's data mirrors _asObject data, connected to d3 canvas
 	self.load = function(srcObject, assignID) {
 		// loadNode updates nodesModel with node data read off srcObject
@@ -13,9 +18,13 @@ BaseNetVisModel = function() {
 			srcObject.id = assignID;
 		}
 
+		// assign graph labels
+		srcObject._root = self;
+		srcObject._label = srcObject.id;
+
 		if (!srcObject.id) {
 			return 'BaseNetVisModel.load() no ID provided';
-		} 
+		}
 		if (self._asObject[srcObject.id]) {
 			// instance already exists
 			return self._asObject[srcObject.id];
@@ -25,14 +34,17 @@ BaseNetVisModel = function() {
 		self.asArray.push(srcObject);
 		return srcObject;
 	};
-};/////////////////////////////////////////////////////////////// Define history model and handlers
+};
+/////////////////////////////////////////////////////////////// Define history model and handlers
 
 
 NetVis.prototype._constructHistory = function() {
 	var self = this;
-	self.history = new BaseNetVisModel(this); // History class inherits from baseModel
+	self.history = new BaseNetVisModel(self, "timeline"); // History class inherits from baseModel
 
 	self.history.loadEvent = function(obj, momentTime) {
+		obj._root = self.history;
+
 		obj._t = momentTime;
 		obj.time = momentTime.toISOString();
 		// eventID to be unique and contain timestamp
@@ -40,6 +52,7 @@ NetVis.prototype._constructHistory = function() {
 		// the same timestamp
 		var i=1;
 		obj.id = obj.time;
+		obj._label = obj.id;
 		while(this._asObject[obj.id]){
 			i++;
 			obj.id = obj.time + "#" + i;
@@ -62,6 +75,7 @@ NetVis.prototype._constructHistory = function() {
 			}
 		}
 		this.asArray.splice(Math.floor((highI + lowI) /2), 0,obj);
+
 	};
 
 
@@ -121,13 +135,13 @@ NetVis.prototype._constructHistory = function() {
 
 
 	self.history.next = function() {
-		if (self.selectedTimeInterval) {
-			if (self.selectedTimeInterval.next) {
-				self.selectedTimeInterval = self.selectedTimeInterval.next;
+		if (self._selectedTimeInterval) {
+			if (self._selectedTimeInterval.next) {
+				self._selectedTimeInterval = self._selectedTimeInterval.next;
 			} else {
 				// reached the end og the timeline, loop to beginning if repeat mode on
 				if (self.config.loopPlay) {
-					self.selectedTimeInterval = this.intervals[0];
+					self._selectedTimeInterval = this.intervals[0];
 				} else {
 					self.play(); // toggle off the play mode
 				}
@@ -189,25 +203,23 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 };
 /////////////////////////////////////////////////////////////// NetVis.Messages handles network's messages that nodes communicate with
 
-
-NetVisMessages = function() {
+NetVis.prototype._constructMessages = function() {
 	var self = this;
-	BaseNetVisModel.apply(self); // Messages class inherits from baseModel
+	self.messages = new BaseNetVisModel(self, "messages"); // Messages class inherits from baseModel
 
-	self.updateAll = function() {
-		for (var i=0; i< self.asArray.length; i++) {
-			self.asArray[i]._p = Math.random(); // _p goes from 0 to 100 to animate message direction
+	self.messages.updateAll = function() {
+		for (var i=0; i< this.asArray.length; i++) {
+			this.asArray[i]._p = Math.random(); // _p goes from 0 to 100 to animate message direction
 		}
 	};
-};/////////////////////////////////////////////////////////////// Define network node model and handlers
+};
+/////////////////////////////////////////////////////////////// Define network node model and handlers
 
 NetVis.prototype._constructNodes = function() {
 	var self = this;
 
-	self.nodes = new BaseNetVisModel(); // nodes class inherits from baseModel
-	self.nodes._root = self;
-	self.nodes._label = "nodes";
-	self.nodes._propertiesAlias = self.nodes._asObject;
+	self.nodes = new BaseNetVisModel(self, "nodes"); // nodes class inherits from baseModel
+
 
 	superLoad = self.nodes.load;
 	self.nodes.load = function(srcObject, assignID) {
@@ -248,7 +260,7 @@ function NetVis(Options) {
 	self._topologyPanel = Options.topologyPanel || "#chart";
 	self._historyPanel = Options.historyPanel || "#history";
 	self._timePanel = Options.timePanel || "#timestamp";
-	self.playmode = false;
+	self._playmode = false;
 
 	self.config = {
 		nodeDefaultDistance: 30,
@@ -256,9 +268,9 @@ function NetVis(Options) {
 		loopPlay: false
 	};
 
-	self._constructNodes();
-	self.messages = new NetVisMessages();
-	self._constructHistory();
+	self._constructNodes(); // constructor for self.nodes
+	self._constructMessages(); // constructor for self.messages
+	self._constructHistory(); // constructor for self.history
 	self.View = new NetVisView();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
@@ -276,13 +288,13 @@ function NetVis(Options) {
 		this.history.updateAll();
 
 		if (this.history.intervals) {
-			this.selectedTimeInterval = this.history.intervals[0];
+			this._selectedTimeInterval = this.history.intervals[0];
 		}
 	};
 
 	self.play = function() {
-		self.playmode = !self.playmode;
-		if (self.playmode) {
+		self._playmode = !self._playmode;
+		if (self._playmode) {
 			self._playTicker = window.setInterval(function() {
 				self.history.next();
 				self.render();
@@ -447,17 +459,17 @@ NetVis.prototype.render = function() {
   .attr("class", "contour");
 
 
-  messages = canvas.selectAll('line.message').data(self.selectedTimeInterval.messages)
+  messages = canvas.selectAll('line.message').data(self._selectedTimeInterval.messages)
   .enter().append('line')
   .on("click",function(d) { self._selected = d; self.render();})
   .attr('class','message');
 
-  messagesAnimation = canvas.selectAll('line.messageAnimation').data(self.selectedTimeInterval.messages)
+  messagesAnimation = canvas.selectAll('line.messageAnimation').data(self._selectedTimeInterval.messages)
   .enter().append('line')
   .on("click",function(d) { self._selected = d; self.render();})
   .attr('class','messageAnimation');
 
-  nodes = canvas.selectAll("circle.node").data(self.selectedTimeInterval.nodes)
+  nodes = canvas.selectAll("circle.node").data(self._selectedTimeInterval.nodes)
   .enter().append("circle")
   .on("click",function(d) { self._selected = d; self.render();})
   .attr('class','node');
@@ -578,7 +590,7 @@ NetVis.prototype.render = function() {
   .on("click", function(d) {self._selected = d.value; self.render();});
 
 
-  if (self.playmode) {
+  if (self._playmode) {
     $("#play").find("span").attr("class","glyphicon glyphicon-pause");
   } else {
     $("#play").find("span").attr("class","glyphicon glyphicon-play");
@@ -593,7 +605,7 @@ NetVis.prototype.render = function() {
 
   // move time-controls panel
   $("#history")
-    .val(self.selectedTimeInterval.i + 1)
+    .val(self._selectedTimeInterval.i + 1)
     .change();
 
 };
@@ -627,8 +639,8 @@ NetVis.prototype.initView = function() {
      $('#history').rangeslider({
        polyfill: false,
        onSlideEnd: function(position, value) {
-       	self.selectedTimeInterval = self.history.intervals[value -1];
-       	self._selected = self.selectedTimeInterval;
+       	self._selectedTimeInterval = self.history.intervals[value -1];
+       	self._selected = self._selectedTimeInterval;
        	$('#timestamp').html(value);
 				self.render();
        }

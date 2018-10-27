@@ -1,9 +1,14 @@
 // BaseNetVisModel contains common elements shared among all the NetVis models
 // NetVis.nodes, NetVis.messages, NetVis.history inherit from BaseNetVisModel
 
-BaseNetVisModel = function() {
+BaseNetVisModel = function(root, label) {
 	var self = this;
 	self._asObject = {}; // used to store info on nodes
+
+	self._propertiesAlias = self._asObject;
+	self._root = root;
+	self._label = label;
+
 	self.asArray = []; // array of node's data mirrors _asObject data, connected to d3 canvas
 	self.load = function(srcObject, assignID) {
 		// loadNode updates nodesModel with node data read off srcObject
@@ -13,9 +18,13 @@ BaseNetVisModel = function() {
 			srcObject.id = assignID;
 		}
 
+		// assign graph labels
+		srcObject._root = self;
+		srcObject._label = srcObject.id;
+
 		if (!srcObject.id) {
 			return 'BaseNetVisModel.load() no ID provided';
-		} 
+		}
 		if (self._asObject[srcObject.id]) {
 			// instance already exists
 			return self._asObject[srcObject.id];

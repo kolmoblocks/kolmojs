@@ -3,9 +3,11 @@
 
 NetVis.prototype._constructHistory = function() {
 	var self = this;
-	self.history = new BaseNetVisModel(this); // History class inherits from baseModel
+	self.history = new BaseNetVisModel(self, "timeline"); // History class inherits from baseModel
 
 	self.history.loadEvent = function(obj, momentTime) {
+		obj._root = self.history;
+
 		obj._t = momentTime;
 		obj.time = momentTime.toISOString();
 		// eventID to be unique and contain timestamp
@@ -13,6 +15,7 @@ NetVis.prototype._constructHistory = function() {
 		// the same timestamp
 		var i=1;
 		obj.id = obj.time;
+		obj._label = obj.id;
 		while(this._asObject[obj.id]){
 			i++;
 			obj.id = obj.time + "#" + i;
@@ -35,6 +38,7 @@ NetVis.prototype._constructHistory = function() {
 			}
 		}
 		this.asArray.splice(Math.floor((highI + lowI) /2), 0,obj);
+
 	};
 
 
@@ -94,13 +98,13 @@ NetVis.prototype._constructHistory = function() {
 
 
 	self.history.next = function() {
-		if (self.selectedTimeInterval) {
-			if (self.selectedTimeInterval.next) {
-				self.selectedTimeInterval = self.selectedTimeInterval.next;
+		if (self._selectedTimeInterval) {
+			if (self._selectedTimeInterval.next) {
+				self._selectedTimeInterval = self._selectedTimeInterval.next;
 			} else {
 				// reached the end og the timeline, loop to beginning if repeat mode on
 				if (self.config.loopPlay) {
-					self.selectedTimeInterval = this.intervals[0];
+					self._selectedTimeInterval = this.intervals[0];
 				} else {
 					self.play(); // toggle off the play mode
 				}
