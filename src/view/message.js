@@ -1,2 +1,2 @@
 // view/message.js
-// Defines render() function for messages 
+// Defines render() function for messages

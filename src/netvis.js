@@ -9,6 +9,8 @@ function NetVis(Options) {
 	self._playmode = false;
 
 	self.config = {
+		_root: self,
+		_label: "configuration",
 		nodeDefaultDistance: 30,
 		nodeDefaultRadius: 10,
 		loopPlay: false
@@ -16,8 +18,9 @@ function NetVis(Options) {
 
 	self._constructNodes(); // constructor for self.nodes
 	self._constructMessages(); // constructor for self.messages
+	self._constructConnections(); // constructor for self.connections
 	self._constructHistory(); // constructor for self.history
-	self.View = new NetVisView();
+  self._constructLogger();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
 
@@ -48,6 +51,16 @@ function NetVis(Options) {
 		} else {
 			window.clearInterval(self._playTicker); // clear play ticking timer
 		}
+		self.render();
+	};
+
+	self.next = function() {
+		self.history.next();
+		self.render();
+	};
+
+	self.prev = function() {
+		self.history.prev();
 		self.render();
 	};
 

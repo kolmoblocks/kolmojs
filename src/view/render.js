@@ -2,6 +2,9 @@
 NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
+  self._width = width;
+  $("#netvis-topology-panel").empty();
+  self.drawBackground();
 
   self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
@@ -12,50 +15,54 @@ NetVis.prototype.render = function() {
     }
   });
 
+  connections = canvas.selectAll('path.connection').data(self._selectedTimeInterval.connections)
+    .enter().append('path')
+    .attr("fill","transparent")
+    .attr("stroke","black")
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','connection');
 
 
-  $(self._topologyPanel).empty();
-  canvas = d3.select(self._topologyPanel)
-  .append("svg")
-  .attr("width",$(self._topologyPanel).width())
-  .attr("height",$(self._topologyPanel).height());
-
-  // Draw the big grey circle in the center
-  canvas.append("circle")
-  .attr("cx", 0.5*width)
-  .attr("cy", 0.5*width)
-  .attr("r", 0.3*width)
-  .attr("class", "contour");
+  messages = canvas.selectAll('path.message').data(self._selectedTimeInterval.messages)
+    .enter().append('path')
+    .attr("fill","transparent")
+    .attr("stroke","black")
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','message');
 
 
-  messages = canvas.selectAll('line.message').data(self._selectedTimeInterval.messages)
-  .enter().append('line')
+  messagesAnimation = canvas.selectAll('circle.messageAnimation').data(self._selectedTimeInterval.messages)
+  .enter().append('circle')
   .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','message');
-
-  messagesAnimation = canvas.selectAll('line.messageAnimation').data(self._selectedTimeInterval.messages)
-  .enter().append('line')
-  .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','messageAnimation');
+  .attr('class','messageAnimation')
+  .attr("r",0.5*self.config.nodeDefaultRadius);
 
   nodes = canvas.selectAll("circle.node").data(self._selectedTimeInterval.nodes)
-  .enter().append("circle")
-  .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','node');
+    .enter().append("circle")
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','node')
+    .attr("r",self.config.nodeDefaultRadius);
+
+  labels = canvas.selectAll("text").data(self._selectedTimeInterval.nodes)
+    .enter().append("text")
+    .text(function(d) {return d.id; });
 
   syncPositions = function() {
+    connections
+      .attr("d", self.drawConnection);
+
+
     messages
-    .attr("x1", function(d) {return d.source._xAbs;})
-    .attr("y1", function(d) {return d.source._yAbs;})
-    .attr("x2", function(d) {return d.destination._xAbs;})
-    .attr("y2", function(d) {return d.destination._yAbs;});
+      .attr("d", self.drawMessage);
+    
 
     messagesAnimation
-    .attr("x1", function(d) {return d.source._xAbs;})
-    .attr("y1", function(d) {return d.source._yAbs;})
-    .attr("x2", function(d) {return d.source._xAbs + d._p*(d.destination._xAbs - d.source._xAbs);})
-    .attr("y2", function(d) {return d.source._yAbs + d._p*(d.destination._yAbs - d.source._yAbs);});
+      .attr("cx", self.drawMessageCX)
+      .attr("cy", self.drawMessageCY);
 
+    labels
+      .attr("x", function(d) {return d._xAbs + self.config.nodeDefaultRadius*2.3;})
+      .attr("y", function(d) {return d._yAbs;});
 
     return	nodes
     .attr("cx", function(d) {return d._xAbs;})
@@ -73,7 +80,6 @@ NetVis.prototype.render = function() {
 
 
   syncPositions()
-  .attr("r",self.config.nodeDefaultRadius)
   .call(d3.behavior.drag()
   .on("dragstart", function(d) {
     this.__origin__ = [d._xAbs, d._yAbs];
@@ -100,6 +106,10 @@ NetVis.prototype.render = function() {
   .on("click",function(d) { self._selected = self; self.render();}) // double click unselects it
   .attr('class','message selected');
 
+  // highlight selected connection
+  connections.filter(function(d) {return self._selected.id === d.id;})
+    .on("click",function(d) { self._selected = self; self.render();}) // double click unselects it
+    .attr('class','connection selected');
 
   // Render selected item graph position
   $("#tree").empty();
@@ -110,7 +120,7 @@ NetVis.prototype.render = function() {
     cur = cur._root;
   }
 
-  position.unshift({"label":"Home", "obj": self});
+  position.unshift({"label":"Network", "obj": self});
   d3.select("#tree")
     .selectAll("li")
     .data(position)
@@ -119,6 +129,11 @@ NetVis.prototype.render = function() {
     .append("a")
     .text(function(d) {return d.label;})
     .on("click", function(d) {self._selected = d.obj; self.render(); });
+
+  $("#tree")
+    .children("li")
+    .last()
+    .attr("class", "netvis-path-selected");
 
   // Render properties-table
   $("#properties-tbody").empty();
@@ -147,15 +162,15 @@ NetVis.prototype.render = function() {
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
 
-  rows.append("td").text(function(d) {return d.attr; });
-
-  rows.filter(function(d) {return !d.obj;})
+  valued = rows.filter(function(d) {return !d.obj;});
+  valued.append("td").text(function(d) {return d.attr; });
+  valued
     .append("td")
     .append("div")
     .attr("class","properties-column")
     .text(function(d) {return d.value; });
 
-  rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return "more.."; })
+  rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return d.attr; })
   .on("click", function(d) {self._selected = d.value; self.render();});
 
 
@@ -176,5 +191,8 @@ NetVis.prototype.render = function() {
   $("#history")
     .val(self._selectedTimeInterval.i + 1)
     .change();
+
+  $("#timestamp")
+    .html(self._selectedTimeInterval.humanTimeLabel);
 
 };

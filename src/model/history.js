@@ -15,12 +15,12 @@ NetVis.prototype._constructHistory = function() {
 		// the same timestamp
 		var i=1;
 		obj.id = obj.time;
-		obj._label = obj.id;
 		while(this._asObject[obj.id]){
 			i++;
-			obj.id = obj.time + "#" + i;
+			obj.id = obj.time + "#" + i + "(" + obj.event + ")";
 		}
-		obj.id = obj.time;
+		obj.id = obj.time  + "(" + obj.event + ")";
+		obj._label = obj.id;
 		this._asObject[obj.id] = obj;
 
 
@@ -38,7 +38,7 @@ NetVis.prototype._constructHistory = function() {
 			}
 		}
 		this.asArray.splice(Math.floor((highI + lowI) /2), 0,obj);
-
+		return obj;
 	};
 
 
@@ -79,6 +79,8 @@ NetVis.prototype._constructHistory = function() {
 				}
 			}
 			curInterval.i = this.intervals.length; // store position index to assign timeline slider to the corresponding position
+			curInterval._root = this;
+			curInterval._label = "interval " + this.intervals.length;
 			this.intervals.push(curInterval);
 			startEvents = finishEvents;
 		}
@@ -89,6 +91,11 @@ NetVis.prototype._constructHistory = function() {
 
 			this.intervals[j].next = this.intervals[j+1];
 			this.intervals[j+1].prev = this.intervals[j];
+		}
+
+		// change human readable timestamp for the last time interval
+		if (this.intervals.length) {
+			this.intervals[this.intervals.length -1].humanTimeLabel = "At "  + this.intervals[this.intervals.length -1]._starts.format("dddd, MMMM Do YYYY, h:mm:ss a");
 		}
 
 	};
@@ -109,6 +116,15 @@ NetVis.prototype._constructHistory = function() {
 					self.play(); // toggle off the play mode
 				}
 			}
+		}
+	};
+
+	self.history.prev = function() {
+		if (!self._selectedTimeInterval) {
+			return;
+		}
+		if (self._selectedTimeInterval.prev) {
+			self._selectedTimeInterval = self._selectedTimeInterval.prev;
 		}
 	};
 

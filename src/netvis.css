@@ -9,17 +9,32 @@
 	margin-top: 20px;
 }
 
+td {
+	padding: 5px;
+}
+
 .properties-panel {
 	margin-left: 20px;
 }
 
 .properties-table {
-	margin-top: 20px;
+	font-size: 14px;
+	border: 0px solid #ffffff;
+	width: 100%;
 }
 
 .properties-column {
 	max-width: 170px;
 	word-wrap: break-word;
+}
+
+.netvis-model-path {
+	font-size: 15px;
+}
+
+.netvis-path-selected {
+	font-size: 17px;
+	font-weight: bold;
 }
 
 #chart {
@@ -43,7 +58,7 @@ circle.contour {
 
 circle.node {
 	fill:steelblue;
-	stroke:black; 
+	stroke:black;
 	stroke-width:0.5px;
 }
 
@@ -54,34 +69,48 @@ circle.node:hover {
 
 circle.node.selected {
 	fill:#aa88ff;
-	stroke:red; 
+	stroke:red;
 	stroke-width:3px;
 }
 
 circle.node.selected:hover {
 	fill:#aa99ff;
-	stroke:red; 
+	stroke:red;
 	stroke-width:6px;
 }
 
 /* messages */
-line.message {
-	stroke:#550077; 
+path.message {
+	stroke:#550077;
 	stroke-width:5.5px;
 }
 
-line.messageAnimation {
-	stroke:#880077; 
-	stroke-width:9.5px;
+circle.messageAnimation {
+	fill:#ff7777;
+	stroke:black;
+	stroke-width:0.1px;
 }
 
 
-line.message:hover {
-	stroke:black; 
+
+path.message:hover {
+	stroke:black;
 	stroke-width:7.5px;
 }
 
 line.message.selected {
-	stroke:red; 
+	stroke:red;
 	stroke-width:12.0px;
+}
+
+/* connections */
+
+line.connection {
+	stroke:#000000;
+	stroke-width:1.5px;
+}
+
+line.connection .selected{
+	stroke:#000000;
+	stroke-width:6.5px;
 }

@@ -18,9 +18,6 @@ BaseNetVisModel = function(root, label) {
 			srcObject.id = assignID;
 		}
 
-		// assign graph labels
-		srcObject._root = self;
-		srcObject._label = srcObject.id;
 
 		if (!srcObject.id) {
 			return 'BaseNetVisModel.load() no ID provided';
@@ -30,10 +27,18 @@ BaseNetVisModel = function(root, label) {
 			return self._asObject[srcObject.id];
 		}
 
+		// assign graph labels
+		srcObject._root = self;
+		srcObject._label = srcObject.id;
 		self._asObject[srcObject.id] = srcObject;
 		self.asArray.push(srcObject);
 		return srcObject;
 	};
+};
+/////////////////////////////////////////////////////////////// NetVis.connections handles network's connections between nodes
+
+NetVis.prototype._constructConnections = function() {
+    this.connections = new BaseNetVisModel(this, "connections");
 };
 /////////////////////////////////////////////////////////////// Define history model and handlers
 
@@ -52,12 +57,12 @@ NetVis.prototype._constructHistory = function() {
 		// the same timestamp
 		var i=1;
 		obj.id = obj.time;
-		obj._label = obj.id;
 		while(this._asObject[obj.id]){
 			i++;
-			obj.id = obj.time + "#" + i;
+			obj.id = obj.time + "#" + i + "(" + obj.event + ")";
 		}
-		obj.id = obj.time;
+		obj.id = obj.time  + "(" + obj.event + ")";
+		obj._label = obj.id;
 		this._asObject[obj.id] = obj;
 
 
@@ -75,7 +80,7 @@ NetVis.prototype._constructHistory = function() {
 			}
 		}
 		this.asArray.splice(Math.floor((highI + lowI) /2), 0,obj);
-
+		return obj;
 	};
 
 
@@ -116,6 +121,8 @@ NetVis.prototype._constructHistory = function() {
 				}
 			}
 			curInterval.i = this.intervals.length; // store position index to assign timeline slider to the corresponding position
+			curInterval._root = this;
+			curInterval._label = "interval " + this.intervals.length;
 			this.intervals.push(curInterval);
 			startEvents = finishEvents;
 		}
@@ -126,6 +133,11 @@ NetVis.prototype._constructHistory = function() {
 
 			this.intervals[j].next = this.intervals[j+1];
 			this.intervals[j+1].prev = this.intervals[j];
+		}
+
+		// change human readable timestamp for the last time interval
+		if (this.intervals.length) {
+			this.intervals[this.intervals.length -1].humanTimeLabel = "At "  + this.intervals[this.intervals.length -1]._starts.format("dddd, MMMM Do YYYY, h:mm:ss a");
 		}
 
 	};
@@ -149,6 +161,15 @@ NetVis.prototype._constructHistory = function() {
 		}
 	};
 
+	self.history.prev = function() {
+		if (!self._selectedTimeInterval) {
+			return;
+		}
+		if (self._selectedTimeInterval.prev) {
+			self._selectedTimeInterval = self._selectedTimeInterval.prev;
+		}
+	};
+
 	// add default time margin moments
 	self.history.loadEvent({"tag":"end"},moment("3000-01-01"));
 	self.history.loadEvent({"tag":"start"},moment("1970-01-01"));
@@ -169,11 +190,16 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 	this.ends = this._ends.toISOString();
 
 	if (prevInterval) {
-		this.messages = prevInterval.messages.slice(0); // js way of copying array instance
+		this.messages = prevInterval.messages.slice(0); // js way of copying an array
 		this.nodes = 	prevInterval.nodes.slice(0);
+		this.connections = prevInterval.connections.slice(0);
+		this.humanTimeLabel = this._starts.format("dddd, MMMM Do YYYY, h:mm:ss a") + " + " + this._ends.from(this._starts, true);
+
 	} else {
+		this.humanTimeLabel = "At " + this._ends.format("dddd, MMMM Do YYYY, h:mm:ss a");
 		this.messages = [];
 		this.nodes = [];
+		this.connections = [];
 	}
 
 	for(var i=0; i< this.startEvents.length; i++) {
@@ -184,9 +210,9 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 				break;
 			case "nodeExited":
 				for(var j = this.nodes.length - 1; j >= 0; j--) {
-					// if(this.nodes[j].id === event.node.id) {
-					// 	this.nodes.splice(j, 1);
-					// }
+					if(this.nodes[j].id === event.node.id) {
+						this.nodes.splice(j, 1);
+					}
 				}
 				break;
 			case "messageSent":
@@ -198,6 +224,10 @@ NetVisInterval = function(startEvents, endEvents, prevInterval) {
 				       this.messages.splice(h, 1);
 				    }
 				}
+				break;
+			case "nodeConnected":
+				this.connections.push(event.connection);
+				break;
 		}
 	}
 };
@@ -224,12 +254,14 @@ NetVis.prototype._constructNodes = function() {
 	superLoad = self.nodes.load;
 	self.nodes.load = function(srcObject, assignID) {
 		// if a new node instance and "permanentNode" is not false, will make the
-		if (srcObject.id && !self.nodes._asObject[srcObject.id]) {
-			if (typeof srcObject.permanentNode === 'undefined') {
-				srcObject.permanentNode = true;
-			}
-			return superLoad(srcObject, assignID);
+		if (srcObject.id && self.nodes._asObject[srcObject.id]) {
+			return self.nodes._asObject[srcObject.id];
 		}
+
+		if (srcObject.id && typeof srcObject.permanentNode === 'undefined') {
+				srcObject.permanentNode = true;
+		}
+		return superLoad(srcObject, assignID);
 	};
 
 	self.nodes.updateAll = function() {
@@ -263,6 +295,8 @@ function NetVis(Options) {
 	self._playmode = false;
 
 	self.config = {
+		_root: self,
+		_label: "configuration",
 		nodeDefaultDistance: 30,
 		nodeDefaultRadius: 10,
 		loopPlay: false
@@ -270,8 +304,9 @@ function NetVis(Options) {
 
 	self._constructNodes(); // constructor for self.nodes
 	self._constructMessages(); // constructor for self.messages
+	self._constructConnections(); // constructor for self.connections
 	self._constructHistory(); // constructor for self.history
-	self.View = new NetVisView();
+  self._constructLogger();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
 
 
@@ -302,6 +337,16 @@ function NetVis(Options) {
 		} else {
 			window.clearInterval(self._playTicker); // clear play ticking timer
 		}
+		self.render();
+	};
+
+	self.next = function() {
+		self.history.next();
+		self.render();
+	};
+
+	self.prev = function() {
+		self.history.prev();
 		self.render();
 	};
 
@@ -347,6 +392,9 @@ NetVis.prototype.parse = function(srcJSON) {
 				break;
 			case "messageReceived":
 				this._parseMessageReceived(srcJSON[i]);
+				break;
+			case "nodeConnected":
+				this._parseNodeConnected(srcJSON[i]);
 				break;
 			default:
 				console.log("Event type ",srcJSON[i].event, " not supported");
@@ -405,6 +453,20 @@ NetVis.prototype._parseMessageSent = function(src) {
 	return r;
 };
 
+/////////////////////////////////////////////////////////////// parse nodeConnected event
+
+NetVis.prototype._parseNodeConnected = function(src) {
+    var r = this.connections.load({
+      "connectingNode": src.connectingNode,
+      "dialedNode":src.dialedNode
+    }, src.connectingNode + ":" + src.dialedNode);
+    r.connectingNode = this.nodes.load({"id":src.connectingNode});
+    r.dialedNode = this.nodes.load({"id":src.dialedNode});
+
+    var e = this.history.loadEvent(src, moment(src.time));
+    e.connection = r;
+    return e;
+};
 /////////////////////////////////////////////////////////////// parse NodeEntered event
 
 NetVis.prototype._parseNodeEntered = function(src) {
@@ -428,11 +490,28 @@ NetVis.prototype._parseNodeExited = function(src) {
   var e = this.history.loadEvent(src, moment(src.time));
   return r;
 };
+/////////////////////////////////////////////////////////////// defaultBackground.js
+// custom background can be added to the topology panel
+// for example, one can draw nodes on top of geographic map
+// and depict network node's real locations
+// if none is provided, the default grey circle background is used
+
+NetVis.prototype.drawBackground = function() {
+  canvas.append("circle")
+    .attr("cx", 0.5*this._width)
+    .attr("cy", 0.5*this._width)
+    .attr("r", 0.3*this._width)
+    .attr("class", "contour");
+};
 /////////////////////////////////////////////////////////////// view/message.js
-// Defines render() function for messages /////////////////////////////////////////////////////////////
+// Defines render() function for messages
+/////////////////////////////////////////////////////////////
 NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
+  self._width = width;
+  $("#netvis-topology-panel").empty();
+  self.drawBackground();
 
   self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
@@ -443,50 +522,60 @@ NetVis.prototype.render = function() {
     }
   });
 
-
-
-  $(self._topologyPanel).empty();
-  canvas = d3.select(self._topologyPanel)
-  .append("svg")
-  .attr("width",$(self._topologyPanel).width())
-  .attr("height",$(self._topologyPanel).height());
-
-  // Draw the big grey circle in the center
-  canvas.append("circle")
-  .attr("cx", 0.5*width)
-  .attr("cy", 0.5*width)
-  .attr("r", 0.3*width)
-  .attr("class", "contour");
+  connections = canvas.selectAll('path.connection').data(self._selectedTimeInterval.connections)
+    .enter().append('path')
+    .attr("fill","transparent")
+    .attr("stroke","black")
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','connection');
 
 
   messages = canvas.selectAll('line.message').data(self._selectedTimeInterval.messages)
-  .enter().append('line')
-  .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','message');
+    .enter().append('line')
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','message');
 
-  messagesAnimation = canvas.selectAll('line.messageAnimation').data(self._selectedTimeInterval.messages)
-  .enter().append('line')
+
+  messagesAnimation = canvas.selectAll('circle.messageAnimation').data(self._selectedTimeInterval.messages)
+  .enter().append('circle')
   .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','messageAnimation');
+  .attr('class','messageAnimation')
+  .attr("r",0.5*self.config.nodeDefaultRadius);
 
   nodes = canvas.selectAll("circle.node").data(self._selectedTimeInterval.nodes)
-  .enter().append("circle")
-  .on("click",function(d) { self._selected = d; self.render();})
-  .attr('class','node');
+    .enter().append("circle")
+    .on("click",function(d) { self._selected = d; self.render();})
+    .attr('class','node')
+    .attr("r",self.config.nodeDefaultRadius);
+
+  labels = canvas.selectAll("text").data(self._selectedTimeInterval.nodes)
+    .enter().append("text")
+    .text(function(d) {return d.id; });
 
   syncPositions = function() {
+    connections
+      .attr("d", function(d) {
+        from = "M" + d.connectingNode._xAbs + " " + d.connectingNode._yAbs + " ";
+        curve = "C " + 0.5*width + " " + 0.5*width + " " +  0.5*width + " "+ 0.5*width;
+        to = " " + d.dialedNode._xAbs + " " + d.dialedNode._yAbs;
+        return from + curve + to;
+      });
+
+
     messages
     .attr("x1", function(d) {return d.source._xAbs;})
     .attr("y1", function(d) {return d.source._yAbs;})
     .attr("x2", function(d) {return d.destination._xAbs;})
     .attr("y2", function(d) {return d.destination._yAbs;});
 
-    messagesAnimation
-    .attr("x1", function(d) {return d.source._xAbs;})
-    .attr("y1", function(d) {return d.source._yAbs;})
-    .attr("x2", function(d) {return d.source._xAbs + d._p*(d.destination._xAbs - d.source._xAbs);})
-    .attr("y2", function(d) {return d.source._yAbs + d._p*(d.destination._yAbs - d.source._yAbs);});
 
+    messagesAnimation
+      .attr("cx", self.drawMessageCX)
+      .attr("cy", self.drawMessageCY);
+
+    labels
+      .attr("x", function(d) {return d._xAbs + self.config.nodeDefaultRadius*2.3;})
+      .attr("y", function(d) {return d._yAbs;});
 
     return	nodes
     .attr("cx", function(d) {return d._xAbs;})
@@ -504,7 +593,6 @@ NetVis.prototype.render = function() {
 
 
   syncPositions()
-  .attr("r",self.config.nodeDefaultRadius)
   .call(d3.behavior.drag()
   .on("dragstart", function(d) {
     this.__origin__ = [d._xAbs, d._yAbs];
@@ -531,6 +619,10 @@ NetVis.prototype.render = function() {
   .on("click",function(d) { self._selected = self; self.render();}) // double click unselects it
   .attr('class','message selected');
 
+  // highlight selected connection
+  connections.filter(function(d) {return self._selected.id === d.id;})
+    .on("click",function(d) { self._selected = self; self.render();}) // double click unselects it
+    .attr('class','connection selected');
 
   // Render selected item graph position
   $("#tree").empty();
@@ -541,7 +633,7 @@ NetVis.prototype.render = function() {
     cur = cur._root;
   }
 
-  position.unshift({"label":"Home", "obj": self});
+  position.unshift({"label":"Network", "obj": self});
   d3.select("#tree")
     .selectAll("li")
     .data(position)
@@ -550,6 +642,11 @@ NetVis.prototype.render = function() {
     .append("a")
     .text(function(d) {return d.label;})
     .on("click", function(d) {self._selected = d.obj; self.render(); });
+
+  $("#tree")
+    .children("li")
+    .last()
+    .attr("class", "netvis-path-selected");
 
   // Render properties-table
   $("#properties-tbody").empty();
@@ -578,15 +675,15 @@ NetVis.prototype.render = function() {
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
 
-  rows.append("td").text(function(d) {return d.attr; });
-
-  rows.filter(function(d) {return !d.obj;})
+  valued = rows.filter(function(d) {return !d.obj;});
+  valued.append("td").text(function(d) {return d.attr; });
+  valued
     .append("td")
     .append("div")
     .attr("class","properties-column")
     .text(function(d) {return d.value; });
 
-  rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return "more.."; })
+  rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return d.attr; })
   .on("click", function(d) {self._selected = d.value; self.render();});
 
 
@@ -608,14 +705,19 @@ NetVis.prototype.render = function() {
     .val(self._selectedTimeInterval.i + 1)
     .change();
 
+  $("#timestamp")
+    .html(self._selectedTimeInterval.humanTimeLabel);
+
 };
 /////////////////////////////////////////////////////////////// view.js defines Netvis.view
 
-function NetVisView() {
+NetVis.prototype._constructLogger = function() {
 	$('.alert .close').on('click', function(e) {
 	    $(this).parent().hide();
 	});
-	this.Logger = {
+	this.logger = {
+		"_root": this,
+		"_label":"logger",
 		"error": function(errorMessage) {
 			console.error(errorMessage);
 			$('.error-alert').append("<p>"+ errorMessage +"</p>");
@@ -625,27 +727,57 @@ function NetVisView() {
 			console.log(logMessage);
 		}
 	};
-}
+};
 
 NetVis.prototype.initView = function() {
-	var self = this;
-     // Render time-controls panel
-     $("#history")
-     	.attr("min",1)
-     	.attr("max",this.history.intervals.length)
-     	.val(1);
+			var self = this;
 
-     $('#history').rangeslider('destroy');
-     $('#history').rangeslider({
-       polyfill: false,
-       onSlideEnd: function(position, value) {
-       	self._selectedTimeInterval = self.history.intervals[value -1];
-       	self._selected = self._selectedTimeInterval;
-       	$('#timestamp').html(value);
+
+			// Render time-controls panel
+			$("#history")
+				.attr("min",1)
+				.attr("max",this.history.intervals.length)
+				.val(1);
+
+			$('#history').rangeslider('destroy');
+			$('#history').rangeslider({
+			 polyfill: false,
+			 onSlideEnd: function(position, value) {
+			 	self._selectedTimeInterval = self.history.intervals[value -1];
+			 	self._selected = self._selectedTimeInterval;
 				self.render();
-       }
-     });
+			 }
+			});
 
+			$(self._topologyPanel).empty();
 
-     self.render();
+			var width = $(self._topologyPanel).width();
+			self._width = width;
+
+			// define message drawing funcitions that use self._width
+			self.drawMessageCX = function(d) {
+				p0 = d.source._xAbs;
+				p3 = d.destination._xAbs;
+				c = self._width*0.5;
+				t = d._p;
+				return Math.pow(1-t,3)*p0 + 3*(1-t)*t*c + Math.pow(t,3)*p3;
+			};
+
+			self.drawMessageCY = function(d) {
+				p0 = d.source._yAbs;
+				p3 = d.destination._yAbs;
+				c = self._width*0.5;
+				t = d._p;
+				return Math.pow(1-t,3)*p0 + 3*(1-t)*t*c + Math.pow(t,3)*p3;
+			};
+
+			// draw canvas
+			canvas = d3.select(self._topologyPanel)
+				.append("svg")
+				.attr("id", "netvis-topology-panel")
+				.attr("width",$(self._topologyPanel).width())
+				.attr("height",$(self._topologyPanel).height());
+
+			// Draw the big grey circle in the center
+			self.render();
 };
