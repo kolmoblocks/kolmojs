@@ -28,8 +28,4 @@ $(function() {
     demo.initView();
   });
 
-  $("#demo1-lookup").click(function() {
-    demo.lookupBlock('cf6e363dde4009ce1df3ba92297564ac51bc28a50653bc6428c05d4314d3650f');
-  });
-
 });
