@@ -1,7 +1,7 @@
 {
-  "name": "NetVis",
+  "name": "kolmojs",
   "version": "0.1.0",
-  "description": "visualize protocol traces for networks",
+  "description": "access and browse kolmoblock-based resources",
   "dependencies": {
     "bower": "^1.3.12",
     "grunt-contrib-concat": "^0.5.0",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dborzov/NetVis"
+    "url": "https://github.com/kolmoblocks/kolmojs"
   },
   "keywords": [
     "visualization",
@@ -28,7 +28,7 @@
   "author": "Peter Borzov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dborzov/NetVis/issues"
+    "url": "https://github.com/kolmoblocks/kolmojs/issues"
   },
-  "homepage": "https://github.com/dborzov/NetVis"
+  "homepage": "https://github.com/kolmoblocks/kolmojs"
 }

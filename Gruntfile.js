@@ -71,6 +71,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-wiredep');
 
 
-	grunt.registerTask('default', ['wiredep','jshint','concat', 'copy']);
+	grunt.registerTask('default', ['wiredep','concat', 'copy']);
 
 }
