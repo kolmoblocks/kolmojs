@@ -1,5 +1,8 @@
 /* General UI Styling */
 
+#kolmojs-panel {
+	border: 1px solid rgb(46, 46, 65);
+}
 
 .container {
 	margin-top: 20px;
@@ -15,6 +18,7 @@ td {
 
 .properties-panel {
 	margin-left: 20px;
+	margin-bottom: 50px;
 }
 
 .properties-table {
@@ -39,7 +43,7 @@ td {
 
 #chart {
 	border: 1px solid grey;
-	min-height: 700px;
+	min-height: 300px;
 
 }
 

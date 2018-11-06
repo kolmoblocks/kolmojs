@@ -30,6 +30,9 @@ NetVis.prototype._constructNodes = function() {
 			self.nodes.asArray[i]._x = 0.5 + 0.3 * Math.sin(i*arc);
 			self.nodes.asArray[i]._y = 0.5 - 0.3 * Math.cos(i*arc);
 		}
+
+		self.nodes._asObject['self']._x = 0.5;
+		self.nodes._asObject['self']._y = 0.5;
 	};
 
 	self.nodes.resetPositions = function() {

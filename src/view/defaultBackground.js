@@ -10,4 +10,9 @@ NetVis.prototype.drawBackground = function() {
     .attr("cy", 0.5*this._width)
     .attr("r", 0.3*this._width)
     .attr("class", "contour");
+    // canvas.append("circle")
+    // .attr("cx", 0.5*this._width)
+    // .attr("cy", 0.5*this._width)
+    // .attr("r", 15)
+    // .attr("class", "node");
 };

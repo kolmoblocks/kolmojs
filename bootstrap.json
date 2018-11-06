@@ -1,29 +1,29 @@
 [
 	{
 		"time": "2008-11-12T11:34:01.077817100Z",
-		"loggerID":"Gandalf",
+		"loggerID":"A.Dumas",
 		"level": "info",
 		"event":"nodeEntered",
-		"name": "Gandalf"
+		"name": "A.Dumas"
 	},
 	{
 		"time": "2008-11-12T11:35:01.077817100Z",
-		"loggerID":"Gandalf",
+		"loggerID":"A.Dumas",
 		"level": "info",
 		"event":"nodeConnected",
-		"connectingNode": "Gandalf",
-		"dialedNode": "Legolas"
+		"connectingNode": "A.Dumas",
+		"dialedNode": "self"
 	},
 
 	{
 		"time": "2014-11-13T11:34:01.477817180Z",
-		"loggerID":"Gandalf",
+		"loggerID":"A.Dumas",
 		"level": "info",
 		"event":"messageSent",
-		"destinationNode": "Legolas",
+		"destinationNode": "self",
 		"message":
 		{
-				"request_id": "Gandalf request",
+				"request_id": "A.Dumas request",
 				"time": "2014-11-12T11:34:01.477817180Z",
 				"protocol": "IPFS 0.1",
 				"type": "join",
@@ -33,13 +33,13 @@
 
 	{
 		"time": "2014-11-14T11:34:01.477817180Z",
-		"loggerID":"Rivendell, the house of Elrond",
+		"loggerID":"Waterloo",
 		"level": "info",
 		"event":"messageReceived",
-		"destinationNode": "Legolas",
+		"destinationNode": "self",
 		"message":
 		{
-				"request_id": "Gandalf request",
+				"request_id": "A.Dumas request",
 				"time": "2014-11-12T11:34:01.477817180Z",
 				"protocol": "IPFS 0.1",
 				"type": "join",
@@ -49,104 +49,50 @@
 
 	{
 		"time": "2014-11-15T11:34:01.477817180Z",
-		"loggerID":"Rivendell, the house of Elrond",
+		"loggerID":"Waterloo",
 		"level": "info",
 		"event":"messageSent",
-		"destinationNode": "Legolas",
+		"destinationNode": "self",
 		"message":
 		{
-				"request_id": "Legolas Request",
+				"request_id": "self Request",
 				"time": "2014-11-12T11:34:01.477817180Z",
 				"protocol": "IPFS 0.1",
 				"type": "join",
-				"contents": "Legolas! The ring is back! Come over for a chat. - Love, Elrond"
+				"contents": "self! The ring is back! Come over for a chat. - Love, Elrond"
 		}
 	},
 
 
 	{
 		"time": "2014-11-16T11:34:01.477817180Z",
-		"loggerID":"Rivendell, the house of Elrond",
+		"loggerID":"Waterloo",
 		"level": "info",
 		"event":"messageSent",
-		"destinationNode": "Boromir",
+		"destinationNode": "Beijing",
 		"message":
 		{
-				"request_id": "Boromir Request",
+				"request_id": "Beijing Request",
 				"time": "2014-11-12T11:34:01.477817180Z",
 				"protocol": "IPFS 0.1",
 				"type": "join",
-				"contents": "Hey Boromir! How are things? Could you come by real quick? -Elrond"
+				"contents": "Hey Beijing! How are things? Could you come by real quick? -Elrond"
 		}
 	},
 
 	{
 		"time": "2014-11-16T15:34:01.477817180Z",
-		"loggerID":"Boromir",
+		"loggerID":"Beijing",
 		"level": "info",
 		"event":"messageReceived",
-		"destinationNode": "Boromir",
+		"destinationNode": "Beijing",
 		"message":
 		{
-				"request_id": "Boromir Request",
+				"request_id": "Beijing Request",
 				"time": "2014-11-12T11:34:01.477817180Z",
 				"protocol": "IPFS 0.1",
 				"type": "join",
-				"contents": "Hey Boromir! How are things? Could you come by real quick? -Elrond"
-		}
-	},
-
-	{
-		"time": "2014-11-17T11:34:01.477817180Z",
-		"loggerID":"Rivendell, the house of Elrond",
-		"level": "info",
-		"event":"messageSent",
-		"destinationNode": "Gimli",
-		"message":
-		{
-				"request_id": "Gimli Request",
-				"time": "2014-11-12T11:34:01.477817180Z",
-				"protocol": "IPFS 0.1",
-				"type": "join",
-				"contents": "Sup, Gimli!  -Elrond"
-		}
-	},
-
-	{
-		"time": "2014-11-18T11:34:01.477817180Z",
-		"loggerID":"Gimli",
-		"level": "info",
-		"event":"messageReceived",
-		"destinationNode": "Gimli",
-		"message":
-		{
-				"request_id": "Gimli Request",
-				"time": "2014-11-12T11:34:01.477817180Z",
-				"protocol": "IPFS 0.1",
-				"type": "join",
-				"contents": "Sup, Gimli!  -Elrond"
-		}
-	},
-	{
-		"time": "2014-11-18T11:35:01.477817180Z",
-		"loggerID":"Gandalf",
-		"level": "info",
-		"event":"nodeExited",
-		"name": "Boromir"
-	},
-	{
-		"time": "2014-11-19T11:34:01.477817180Z",
-		"loggerID":"Gimli",
-		"level": "info",
-		"event":"messageSent",
-		"destinationNode": "Rivendell, the house of Elrond",
-		"message":
-		{
-				"request_id": "Gimli Response",
-				"time": "2014-11-12T11:34:01.477817180Z",
-				"protocol": "IPFS 0.1",
-				"type": "join",
-				"contents": "Go away, Elrond, you are drunk"
+				"contents": "Hey Beijing! How are things? Could you come by real quick? -Elrond"
 		}
 	}
 ]

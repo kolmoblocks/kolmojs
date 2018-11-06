@@ -275,6 +275,9 @@ NetVis.prototype._constructNodes = function() {
 			self.nodes.asArray[i]._x = 0.5 + 0.3 * Math.sin(i*arc);
 			self.nodes.asArray[i]._y = 0.5 - 0.3 * Math.cos(i*arc);
 		}
+
+		self.nodes._asObject['self']._x = 0.5;
+		self.nodes._asObject['self']._y = 0.5;
 	};
 
 	self.nodes.resetPositions = function() {
@@ -517,6 +520,11 @@ NetVis.prototype.drawBackground = function() {
     .attr("cy", 0.5*this._width)
     .attr("r", 0.3*this._width)
     .attr("class", "contour");
+    // canvas.append("circle")
+    // .attr("cx", 0.5*this._width)
+    // .attr("cy", 0.5*this._width)
+    // .attr("r", 15)
+    // .attr("class", "node");
 };
 /////////////////////////////////////////////////////////////// view/message.js
 // Defines render() function for messages
