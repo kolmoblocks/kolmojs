@@ -436,14 +436,17 @@ function NetVis(Options) {
 				self.logger.error("Failure loading "+cid+": "+ error.statusText);
 				return;
 			};
+			
 			self.blocks[json["target_id"]] = json;
 			json['_root'] = self.blocks;
 			json['_label'] =  json["target_id"].slice(0,10) + "...";
-			json['kolmoblocks']['_label'] = "k";
-			for (each in json['kolmoblocks']) {
-				json['kolmoblocks'][each]['_root'] = json;
-				json['kolmoblocks'][each]['_label'] = each; 
-			}
+			if (json['kolmoblocks']) {
+				json['kolmoblocks']['_label'] = "k";
+				for (each in json['kolmoblocks']) {
+					json['kolmoblocks'][each]['_root'] = json;
+					json['kolmoblocks'][each]['_label'] = each; 
+				}
+			};
 			self._selected = json;
 			self.render();
 		});
@@ -774,12 +777,12 @@ NetVis.prototype.render = function() {
       label = label.slice(0, 20) + "..." + label.slice(label.length - 5, label.length);
     };
 
-    attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object"});
+    attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64});
   }
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
 
-  valued = rows.filter(function(d) {return !d.obj;});
+  valued = rows.filter(function(d) {return (!d.obj && !d.cid);});
   valued.append("td").text(function(d) {return d.attr; });
   valued
     .append("td")
@@ -787,10 +790,19 @@ NetVis.prototype.render = function() {
     .attr("class","properties-column")
     .text(function(d) {return d.value; });
 
-  rows.filter(function(d) {return d.obj;}).append("td").append("a").text(function(d) {return d.attr; })
-  .on("click", function(d) {self._selected = d.value; self.render();});
+  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").text(function(d) {return d.attr; })
+    .on("click", function(d) {self._selected = d.value; self.render();});
 
-
+  links = rows.filter(function(d) {return d.cid;});
+  links.append("td").text(function(d) {return d.attr; });
+  links
+    .append("td")
+    .append("a")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; })
+    .on("click", function(d) { self.lookupBlock(d.value);});
+  
+  ;
 
   if (self._playmode) {
     $("#play").find("span").attr("class","glyphicon glyphicon-pause");

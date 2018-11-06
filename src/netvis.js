@@ -147,14 +147,17 @@ function NetVis(Options) {
 				self.logger.error("Failure loading "+cid+": "+ error.statusText);
 				return;
 			};
+			
 			self.blocks[json["target_id"]] = json;
 			json['_root'] = self.blocks;
 			json['_label'] =  json["target_id"].slice(0,10) + "...";
-			json['kolmoblocks']['_label'] = "k";
-			for (each in json['kolmoblocks']) {
-				json['kolmoblocks'][each]['_root'] = json;
-				json['kolmoblocks'][each]['_label'] = each; 
-			}
+			if (json['kolmoblocks']) {
+				json['kolmoblocks']['_label'] = "k";
+				for (each in json['kolmoblocks']) {
+					json['kolmoblocks'][each]['_root'] = json;
+					json['kolmoblocks'][each]['_label'] = each; 
+				}
+			};
 			self._selected = json;
 			self.render();
 		});
