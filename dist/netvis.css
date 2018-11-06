@@ -4,6 +4,10 @@
 	border: 1px solid rgb(46, 46, 65);
 }
 
+.demo-canvas {
+	border: 2px solid rgb(46, 46, 65);
+	background-color: #dddddd;
+}
 .container {
 	margin-top: 20px;
 }

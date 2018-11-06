@@ -157,7 +157,13 @@ NetVis.prototype.render = function() {
       // private attribute, ignoring
       continue;
     }
-    attributes.push({"attr": key, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object"});
+
+    var label = key;
+    if (label.length > 40) {
+      label = label.slice(0, 20) + "..." + label.slice(label.length - 5, label.length);
+    };
+
+    attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object"});
   }
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");

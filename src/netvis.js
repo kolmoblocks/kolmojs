@@ -15,32 +15,32 @@ function NetVis(Options) {
 		nodeDefaultRadius: 10,
 		loopPlay: false
 	};
-
+	
 	self._constructNodes(); // constructor for self.nodes
 	self._constructMessages(); // constructor for self.messages
 	self._constructConnections(); // constructor for self.connections
 	self._constructHistory(); // constructor for self.history
-  self._constructLogger();
+	self._constructLogger();
 	self._selected = self; // _selected object's public attributes are shown at properties-table
-
-
+	
+	
 	self.resetPositions = function() {
 		self.nodes.resetPositions();
 		self._selected = self;
 		self.render();
 	};
-
-
+	
+	
 	self.updateAll = function() {
 		this.nodes.updateAll();
 		this.messages.updateAll();
 		this.history.updateAll();
-
+		
 		if (this.history.intervals) {
 			this._selectedTimeInterval = this.history.intervals[0];
 		}
 	};
-
+	
 	self.play = function() {
 		self._playmode = !self._playmode;
 		if (self._playmode) {
@@ -53,36 +53,54 @@ function NetVis(Options) {
 		}
 		self.render();
 	};
-
+	
 	self.next = function() {
 		self.history.next();
 		self.render();
 	};
-
+	
 	self.prev = function() {
 		self.history.prev();
 		self.render();
 	};
-
+	
 	self.loopPlay = function() {
 		self.config.loopPlay = !self.config.loopPlay;
 		self.render();
 	};
-
+	
 	$(document).on("keydown", function(event) {
 		console.log("keydown logged!", event);
 		switch (event.keyCode) {
 			case 32:
-				self.play();
-				break;
+			self.play();
+			break;
 			case 37:
-				self.prev();
-				break;
+			self.prev();
+			break;
 			case 39:
-				self.next();
-				break;
+			self.next();
+			break;
 		}
 	});
+
+	self.blocks = {
+		_root: self,
+		_label: "block manifests",
+	};
+
+	self.lookupBlock = function(cid) {
+		d3.json("/gateway/public/" + cid + ".json", function(error, json) {
+			if (error) {
+				self.logger.error("Failure loading "+cid+": "+ error.statusText);
+				return;
+			};
+			self.blocks[json["_target_id"]] = json;
+			json['_root'] = self.blocks; 
+			self._selected = json;
+			self.render();
+		});
+	};
 
 }
 
