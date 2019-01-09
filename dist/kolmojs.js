@@ -348,7 +348,6 @@ function NetVis(Options) {
 	self._historyPanel = Options.historyPanel || "#history";
 	self._timePanel = Options.timePanel || "#timestamp";
 	self._playmode = false;
-
 	self.config = {
 		_root: self,
 		_label: "configuration",
@@ -356,7 +355,7 @@ function NetVis(Options) {
 		nodeDefaultRadius: 10,
 		loopPlay: false
 	};
-	
+
 	self._constructNodes(); // constructor for self.nodes
 	self._constructMessages(); // constructor for self.messages
 	self._constructConnections(); // constructor for self.connections
@@ -610,6 +609,19 @@ NetVis.prototype.drawBackground = function() {
     // .attr("r", 15)
     // .attr("class", "node");
 };
+/////////////////////////////////////////////////////////////// renderDown function
+NetVis.prototype.renderDown = function(id) {
+	// Adds content to the id element WITHOUT clearing anything
+	rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
+  $(id).append("td").text(function(d) {return d.attr; });
+  $(id)
+    .append("td")
+    .append("a")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; })
+    .on("click", function(d) { self.lookupBlock(d.value);});
+}
+
 /////////////////////////////////////////////////////////////// view/message.js
 // Defines render() function for messages
 /////////////////////////////////////////////////////////////
@@ -617,8 +629,8 @@ NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
   self._width = width;
-  $("#netvis-topology-panel").empty();
-  self.drawBackground();
+  //$("#netvis-topology-panel").empty(); useless for now
+  //self.drawBackground();
 
   self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
@@ -749,8 +761,9 @@ NetVis.prototype.render = function() {
     .last()
     .attr("class", "netvis-path-selected");
 
-  // Render properties-table
-  $("#properties-tbody").empty();
+	// Render properties-table
+	
+	$("#properties-tbody").empty();
   attributes = [];
   if (self._selected._propertiesAlias) {
     objTraversed = self._selected._propertiesAlias;
@@ -790,9 +803,9 @@ NetVis.prototype.render = function() {
     .attr("class","properties-column")
     .text(function(d) {return d.value; });
 
-  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").text(function(d) {return d.attr; })
-    .on("click", function(d) {self._selected = d.value; self.render();});
-
+  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").attr("id",d.attr).text(function(d) {return d.attr; })
+    .on("click", function(d) {self._selected = d.value; self.renderDown(d.attr);});
+	
   links = rows.filter(function(d) {return d.cid;});
   links.append("td").text(function(d) {return d.attr; });
   links
@@ -801,8 +814,7 @@ NetVis.prototype.render = function() {
     .attr("class","properties-column")
     .text(function(d) {return d.value; })
     .on("click", function(d) { self.lookupBlock(d.value);});
-  
-  ;
+	
 
   if (self._playmode) {
     $("#play").find("span").attr("class","glyphicon glyphicon-pause");
