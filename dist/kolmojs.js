@@ -779,7 +779,7 @@ NetVis.prototype.render = function() {
     };
 
 		attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64,
-			"kb": objTraversed.hasOwnProperty('kolmoblocks')});
+			"kb": objTraversed.hasOwnProperty('kolmoblocks')? 'true' : 'false'});
 			console.log(objTraversed);
   }
 
@@ -795,10 +795,9 @@ NetVis.prototype.render = function() {
 
   rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").attr("id",function(d) {return d.attr}).text(function(d) {return d.attr; })
     .on("click", function(d) {
-			if (d.kb) {
+			if (d.kb == 'true') {
 					self._selected = d.value;
 					for (var cur in d.value) {
-						console.log(cur);
 						if (cur != "_label") {
 							var tmp = cur;
 							var $td = $("<tr><td><a>"+cur+"</a></td><tr>");
@@ -806,9 +805,12 @@ NetVis.prototype.render = function() {
 							$("#kolmoblocks").append($td);
 						}			
 					}
+					d.kb = 'none';
 				}
-				self._selected = d.value; 
-				self.render();
+				else if (d.kb == 'false') {
+					self._selected = d.value; 
+					self.render();
+				}
 			});
 	
   links = rows.filter(function(d) {return d.cid;});
