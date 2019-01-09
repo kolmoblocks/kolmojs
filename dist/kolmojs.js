@@ -802,7 +802,7 @@ NetVis.prototype.render = function() {
 							var tmp = cur;
 							var $td = $("<tr><td><a>"+cur+"</a></td><tr>");
 							$td.click(function(){self.lookupBlock(d.value[tmp].encoding_table_id)});
-							$("#kolmoblocks").append($td);
+							$("#"+d.attr).append($td);
 						}			
 					}
 					d.kb = 'none';
