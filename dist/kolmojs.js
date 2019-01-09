@@ -609,18 +609,6 @@ NetVis.prototype.drawBackground = function() {
     // .attr("r", 15)
     // .attr("class", "node");
 };
-/////////////////////////////////////////////////////////////// renderDown function
-NetVis.prototype.renderDown = function(id) {
-	// Adds content to the id element WITHOUT clearing anything
-	rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
-  $(id).append("td").text(function(d) {return d.attr; });
-  $(id)
-    .append("td")
-    .append("a")
-    .attr("class","properties-column")
-    .text(function(d) {return d.value; })
-    .on("click", function(d) { self.lookupBlock(d.value);});
-}
 
 /////////////////////////////////////////////////////////////// view/message.js
 // Defines render() function for messages
@@ -790,7 +778,9 @@ NetVis.prototype.render = function() {
       label = label.slice(0, 20) + "..." + label.slice(label.length - 5, label.length);
     };
 
-    attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64});
+		attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64,
+			"kb": objTraversed.hasOwnProperty('kolmoblocks')});
+			console.log(objTraversed);
   }
 
   rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
@@ -803,8 +793,23 @@ NetVis.prototype.render = function() {
     .attr("class","properties-column")
     .text(function(d) {return d.value; });
 
-  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").attr("id",d.attr).text(function(d) {return d.attr; })
-    .on("click", function(d) {self._selected = d.value; self.renderDown(d.attr);});
+  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").attr("id",function(d) {return d.attr}).text(function(d) {return d.attr; })
+    .on("click", function(d) {
+			if (d.kb) {
+					self._selected = d.value;
+					for (var cur in d.value) {
+						console.log(cur);
+						if (cur != "_label") {
+							var tmp = cur;
+							var $td = $("<tr><td><a>"+cur+"</a></td><tr>");
+							$td.click(function(){self.lookupBlock(d.value[tmp].encoding_table_id)});
+							$("#kolmoblocks").append($td);
+						}			
+					}
+				}
+				self._selected = d.value; 
+				self.render();
+			});
 	
   links = rows.filter(function(d) {return d.cid;});
   links.append("td").text(function(d) {return d.attr; });
