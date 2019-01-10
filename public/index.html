@@ -1,0 +1,67 @@
+<html>
+ <head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>kolmojs demo</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+
+	<!-- endbower -->
+	<script src="dist/kolmojs.js"></script>
+	<script src="store.js"></script>
+	<script src="index.js"></script>
+</head>
+<body>
+    <div class="container">
+    	<div class="row">
+        <div class="col-xs-12">
+          <small><b>Kolmoblocks</b>, <a href="https://github.com/kolmoblocks/kolmojs">the distributed web</a></small>
+        </div>
+  	    <div class="col-xs-8">
+					Welcome to the kolmoblocks demo!
+
+					<h3>First example </h3>
+					The same data block is compressed with different codecs.
+					<div class="row">
+							<div class="col-xs-8">
+								<div  class="demo-canvas">
+									<pre id="canvas_a" class="pre-scrollable">This is where the block's data will be rendered</pre>
+								</div>
+							</div>
+							<div class="col-xs-4">
+								<a onclick="lookupBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea');" href="#">Look up ea344d2...5fea</a>
+								<br>
+								<a onclick="renderBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea', '218d21ba0','#canvas_a');" href="#">Render ea344d2.../218d21ba0</a>
+							</div>
+					</div>
+
+					<h3>Second example</h3>
+					We reuse the preloaded encoding table for a different data block.
+					<div class="row">
+							<div class="col-xs-8">
+								<div  class="demo-canvas">
+									<pre id="canvas_b" class="pre-scrollable">This is where the block's data will be rendered</pre>
+								</div>
+							</div>
+							<div class="col-xs-4">
+								<a onclick="lookupBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4');" href="#">Look up 7cfd...d4</a>
+								<br>
+								<a onclick="renderBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4', '218d290ec','#canvas_b');" href="#">Render 7cfd...d4/218d290ec</a>
+							</div>
+					</div>
+
+		    </div>
+		    <div class="col-xs-4" id="kolmojs-panel">
+					<div class="row properties-panel">
+						<ol id="tree" class="breadcrumb netvis-model-path">
+						</ol>
+						<br>
+		    		<table class="properties-table">
+							<tbody id="properties-tbody">
+		    			</tbody>
+		    		</table>
+					</div>
+			</div>
+	    </div>
+    </div>
+</body>
+</html>
