@@ -4,21 +4,10 @@
 	<title>kolmojs demo</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<!-- bower:css -->
-	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-	<!-- endbower -->
 
-	<link rel="stylesheet" href="bower_components/rangeslider.js/dist/rangeslider.css" />
-	<link rel="stylesheet" href="dist/netvis.css" />
-
-	<!-- bower:js -->
-	<script src="bower_components/jquery/dist/jquery.js"></script>
-	<script src="bower_components/d3/d3.js"></script>
-	<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-	<script src="bower_components/moment/moment.js"></script>
-	<script src="bower_components/rangeslider.js/dist/rangeslider.js"></script>
 	<!-- endbower -->
 	<script src="dist/kolmojs.js"></script>
+	<script src="store.js"></script>
 	<script src="index.js"></script>
 </head>
 <body>
@@ -39,9 +28,9 @@
 								</div>
 							</div>
 							<div class="col-xs-4">
-								<a onclick="demo.lookupBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea');" href="#">Look up ea344d2...5fea</a>
+								<a onclick="lookupBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea');" href="#">Look up ea344d2...5fea</a>
 								<br>
-								<a onclick="demo.renderBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea', '218d21ba0','#canvas_a');" href="#">Render ea344d2.../218d21ba0</a>
+								<a onclick="renderBlock('ea344d2090e370ea9d701d5718abebeaad2d314ea55543f48aa1615aefeb5fea', '218d21ba0','#canvas_a');" href="#">Render ea344d2.../218d21ba0</a>
 							</div>
 					</div>
 
@@ -54,9 +43,9 @@
 								</div>
 							</div>
 							<div class="col-xs-4">
-								<a onclick="demo.lookupBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4');" href="#">Look up 7cfd...d4</a>
+								<a onclick="lookupBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4');" href="#">Look up 7cfd...d4</a>
 								<br>
-								<a onclick="demo.renderBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4', '218d290ec','#canvas_b');" href="#">Render 7cfd...d4/218d290ec</a>
+								<a onclick="renderBlock('7cfd5747dd92443a30e230caf3f092a9b9880096f0d51d13433a9957c8d546d4', '218d290ec','#canvas_b');" href="#">Render 7cfd...d4/218d290ec</a>
 							</div>
 					</div>
 
