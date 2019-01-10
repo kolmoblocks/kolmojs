@@ -1,10 +1,9 @@
-
 NetVis.prototype.render = function() {
   var self = this;
   var width = $(self._topologyPanel).width();
   self._width = width;
-  $("#netvis-topology-panel").empty();
-  self.drawBackground();
+  //$("#netvis-topology-panel").empty(); useless for now
+  //self.drawBackground();
 
   self.nodes.asArray.forEach(function(el) {
     if (!el._xAbs) {
@@ -135,60 +134,79 @@ NetVis.prototype.render = function() {
     .last()
     .attr("class", "netvis-path-selected");
 
-    // Render properties-table
-    $("#properties-tbody").empty();
-    attributes = [];
-    if (self._selected._propertiesAlias) {
-      objTraversed = self._selected._propertiesAlias;
-    } else {
-      objTraversed = self._selected;
+	// Render properties-table
+	
+	$("#properties-tbody").empty();
+  attributes = [];
+  if (self._selected._propertiesAlias) {
+    objTraversed = self._selected._propertiesAlias;
+  } else {
+    objTraversed = self._selected;
+  }
+
+  for (var key in objTraversed) {
+    if (!objTraversed.hasOwnProperty(key)) {
+      // inherited attribute, ignoring
+      continue;
+    }
+    if (typeof(objTraversed[key]) == "function") {
+      // attribute is a function, ignoring
+      continue;
+    }
+    if (key.charAt(0) === "_") {
+      // private attribute, ignoring
+      continue;
     }
 
-    for (var key in objTraversed) {
-      if (!objTraversed.hasOwnProperty(key)) {
-        // inherited attribute, ignoring
-        continue;
-      }
-      if (typeof(objTraversed[key]) == "function") {
-        // attribute is a function, ignoring
-        continue;
-      }
-      if (key.charAt(0) === "_") {
-        // private attribute, ignoring
-        continue;
-      }
+    var label = key;
+    if (label.length > 40) {
+      label = label.slice(0, 20) + "..." + label.slice(label.length - 5, label.length);
+    };
 
-      var label = key;
-      if (label.length > 40) {
-        label = label.slice(0, 20) + "..." + label.slice(label.length - 5, label.length);
-      };
+		attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64,
+			"kb": objTraversed.hasOwnProperty('kolmoblocks')? 'true' : 'false'});
+			console.log(objTraversed);
+  }
 
-      attributes.push({"attr": label, "value":objTraversed[key], "obj": typeof(objTraversed[key]) == "object", "cid": objTraversed[key]['length']==64});
-    }
+  rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
 
-    rows = d3.select("#properties-tbody").selectAll("tr").data(attributes).enter().append("tr");
+  valued = rows.filter(function(d) {return (!d.obj && !d.cid);});
+  valued.append("td").text(function(d) {return d.attr; });
+  valued
+    .append("td")
+    .append("div")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; });
 
-    valued = rows.filter(function(d) {return (!d.obj && !d.cid);});
-    valued.append("td").text(function(d) {return d.attr; });
-    valued
-      .append("td")
-      .append("div")
-      .attr("class","properties-column")
-      .text(function(d) {return d.value; });
-
-    rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").text(function(d) {return d.attr; })
-      .on("click", function(d) {self._selected = d.value; self.render();});
-
-    links = rows.filter(function(d) {return d.cid;});
-    links.append("td").text(function(d) {return d.attr; });
-    links
-      .append("td")
-      .append("a")
-      .attr("class","properties-column")
-      .text(function(d) {return d.value; })
-      .on("click", function(d) { self.lookupBlock(d.value);});
-    
-    ;
+  rows.filter(function(d) {return (d.obj && !d.cid);}).append("td").append("a").attr("id",function(d) {return d.attr}).text(function(d) {return d.attr; })
+    .on("click", function(d) {
+			if (d.kb == 'true') {
+					self._selected = d.value;
+					for (var cur in d.value) {
+						if (cur != "_label") {
+							var tmp = cur;
+							var $td = $("<tr><td><a>"+cur+"</a></td><tr>");
+							$td.click(function(){self.lookupBlock(d.value[tmp].encoding_table_id)});
+							$("#"+d.attr).append($td);
+						}			
+					}
+					d.kb = 'none';
+				}
+				else if (d.kb == 'false') {
+					self._selected = d.value; 
+					self.render();
+				}
+			});
+	
+  links = rows.filter(function(d) {return d.cid;});
+  links.append("td").text(function(d) {return d.attr; });
+  links
+    .append("td")
+    .append("a")
+    .attr("class","properties-column")
+    .text(function(d) {return d.value; })
+    .on("click", function(d) { self.lookupBlock(d.value);});
+	
 
   if (self._playmode) {
     $("#play").find("span").attr("class","glyphicon glyphicon-pause");
@@ -210,5 +228,4 @@ NetVis.prototype.render = function() {
 
   $("#timestamp")
     .html(self._selectedTimeInterval.humanTimeLabel);
-
-};
+}

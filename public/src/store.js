@@ -43,8 +43,7 @@ async function loadKolmoblock(manifest, canvas) {
   
   
 	const outBuf = new Uint8Array(memory.buffer, offset, size);
-	canvas.empty();
-	canvas.append(new TextDecoder().decode(outBuf));
+    // put outBuf INTO canvas, whatever that is in this case
     return mm;
 }
 
