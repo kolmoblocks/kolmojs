@@ -38,7 +38,6 @@
   "bugs": {
     "url": "https://github.com/kolmoblocks/kolmojs/issues"
   },
-  
   "eslintConfig": {
     "extends": "react-app"
   },
