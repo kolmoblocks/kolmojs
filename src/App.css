@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+}
+
+
+.App-link {
+  color: #000000;
+}
+
+.jumbotron {
+  height: 40vh;
+  min-height: 200px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
