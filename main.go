@@ -106,7 +106,7 @@ func newRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/search", displayJson).Methods("GET")
 	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("/build"))) //path to be updated 
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("build"))) //path to be updated 
 	return r
 }
 
