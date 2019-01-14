@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import Tree from './Tree';
+import {loadKolmoblock} from './../store';
 
 const TreeWrapper = styled.div`
   width: 250px;

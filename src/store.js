@@ -1,15 +1,16 @@
 // kolmoblock renderer first
+var $ = require('jquery');
 
-async function loadKolmoblock(manifest, canvas) {
-    const wasm_response = await fetch('/gateway/raw/' + manifest['wasm_id']);
+export async function loadKolmoblock(manifest, canvas) {
+    const wasm_response = await fetch('/raw/' + manifest['wasm_id']);
     const buffer = await wasm_response.arrayBuffer();
 
-    const huffmanTableResponse = await fetch('/gateway/raw/' + manifest["encoding_table_id"]);
+    const huffmanTableResponse = await fetch('/raw/' + manifest["encoding_table_id"]);
     const huffmanTableRaw = await huffmanTableResponse.arrayBuffer();
     const huffmanTable = new Uint8Array(huffmanTableRaw, 0, huffmanTableRaw.byteLength);
     console.log("serialized huffman-table size:", huffmanTableRaw.byteLength);
 
-    const datablockResponse = await fetch('/gateway/raw/' + manifest["encoded_data"]);
+    const datablockResponse = await fetch('/raw/' + manifest["encoded_data"]);
     const datablockRaw = await datablockResponse.arrayBuffer();
     const datablock = new Uint8Array(datablockRaw, 0, datablockRaw.byteLength);
     console.log("serialized encoded data size:", datablockRaw.byteLength);
@@ -21,7 +22,7 @@ async function loadKolmoblock(manifest, canvas) {
         consoleRightmostLog: num => console.log("rightmost is:", num),
     }});
 
-    mm = instance.exports;
+    var mm = instance.exports;
     const huffmanOffset = mm.getHuffmanOffset();
     const strBuf = new Uint8Array(mm.memory.buffer, huffmanOffset, huffmanTable.length);
     for (let i=0; i < huffmanTable.length; i++) {
@@ -44,33 +45,38 @@ async function loadKolmoblock(manifest, canvas) {
   
 	const outBuf = new Uint8Array(memory.buffer, offset, size);
     // put outBuf INTO canvas, whatever that is in this case
+    canvas.text(outBuf);
     return mm;
 }
 
 
-lookupBlock = function(cid) {
-    d3.json("/gateway/public/" + cid + ".json", function(error, json) {
-        if (error) {
-            self.logger.error("Failure loading "+cid+": "+ error.statusText);
-            return;
-        };
-        
-        self.blocks[json["target_id"]] = json;
-        json['_root'] = self.blocks;
-        json['_label'] =  json["target_id"].slice(0,10) + "...";
-        if (json['kolmoblocks']) {
-            json['kolmoblocks']['_label'] = "k";
-            for (each in json['kolmoblocks']) {
-                json['kolmoblocks'][each]['_root'] = json;
-                json['kolmoblocks'][each]['_label'] = each; 
-            }
-        };
-        self._selected = json;
-        self.render();
-    });
-};
+// export function lookupBlock(cid) {
+//     $.ajax({
+//         url : '/search?cid=' + cid ,
+//         type : 'GET',
+//         dataType : 'json',
+//         context: document.body,
+//         success: function(json){
+//             this.blocks[json["target_id"]] = json;
+//             json['_root'] = this.blocks;
+//             json['_label'] =  json["target_id"].slice(0,10) + "...";
+//             if (json['kolmoblocks']) {
+//                 json['kolmoblocks']['_label'] = "k";
+//                 for (var each in json['kolmoblocks']) {
+//                     json['kolmoblocks'][each]['_root'] = json;
+//                     json['kolmoblocks'][each]['_label'] = each; 
+//                 }
+//             };
+//             this._selected = json;
+//         },
+//         error: function(error) {
+//             console.log("Failure loading " + cid);
+//             console.log(error);
+//         }
+//     });
+// };
 
-renderBlock = function(cid, kb, target) {
-    var manifest = self.blocks[cid]['kolmoblocks'][kb];
-    loadKolmoblock(manifest, $(target));	
-};
+// export function renderBlock(cid, kb, target) {
+//     var manifest = this.blocks[cid]['kolmoblocks'][kb];
+//     loadKolmoblock(manifest, $(target));
+// };
