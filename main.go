@@ -2,15 +2,16 @@ package main
 
 import (
     "fmt"
-    "log"
 	"net/http"
 	"io/ioutil"
 	"github.com/gorilla/mux"
 	"encoding/json"
 	"strings"
 	"strconv"
+	"google.golang.org/appengine"
 )
 
+//google cloud memorystore
 
 func check(e error) {
     if e != nil {
@@ -111,7 +112,12 @@ func newRouter() *mux.Router {
 }
 
 
-func main() {
+func init(){
 	r := newRouter()	
-    log.Fatal(http.ListenAndServe(":8080", r))
+	http.Handle("/", r)
+}
+
+
+func main() {
+	appengine.Main() // Starts the server to receive requests
 }

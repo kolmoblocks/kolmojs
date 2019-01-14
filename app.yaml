@@ -1,0 +1,9 @@
+#specify the runtime e.g. go,node,java,.NET etc
+runtime: go
+api_version: go1
+
+env: standard
+
+handlers:
+- url: /.*
+  script: _go_app
