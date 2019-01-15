@@ -51,29 +51,35 @@ export async function loadBlock(manifest) {
 
 export function lookupBlock(cid='') {
     let selected = {};
+    let theUrl = (cid===''? '/search' : '/search?cid=');
     $.ajax({
-        url : '/search?cid=' + cid ,
+        url : 'http://'+window.location.host + theUrl,
         type : 'GET',
         dataType : 'json',
-        context: document.body,
         success: function(json){
-            this.blocks[json["target_id"]] = json;
-            json['_root'] = this.blocks;
-            json['_label'] =  json["target_id"].slice(0,10) + "...";
-            if (json['kolmoblocks']) {
-                json['kolmoblocks']['_label'] = "k";
-                for (var each in json['kolmoblocks']) {
-                    json['kolmoblocks'][each]['_root'] = json;
-                    json['kolmoblocks'][each]['_label'] = each; 
-                }
-            };
+            console.log(json);
+            if (cid != ''){
+                this.blocks[json["target_id"]] = json;
+                json['_root'] = this.blocks;
+                json['_label'] =  json["target_id"].slice(0,10) + "...";
+                if (json['kolmoblocks']) {
+                    json['kolmoblocks']['_label'] = "k";
+                    for (var each in json['kolmoblocks']) {
+                        json['kolmoblocks'][each]['_root'] = json;
+                        json['kolmoblocks'][each]['_label'] = each; 
+                    }
+                };
+            }
             selected = json;
         },
         error: function(error) {
             console.log("Failure loading " + cid);
-            console.log(error);
+            //alert(error.responseText);
+            // THIS IS BAD CHANGE THIS LATER!!!!!
+            selected = JSON.parse(error.responseText);
         }
     });
+    console.log(selected.toString());
     return selected;
 };
 

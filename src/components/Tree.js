@@ -3,40 +3,10 @@ import values from 'lodash/values';
 import PropTypes from 'prop-types';
 
 import TreeNode from './TreeNode';
+import { lookupBlock } from '../store';
 
-const data = {
-  '/all': {
-    path: '/all',
-    type: 'folder',
-    isRoot: true,
-    children: ['/all/security', '/all/defense'],
-  },
-  '/all/security': {
-    path: '/all/security',
-    type: 'folder',
-    children: ['/all/security/readme.md'],
-  },
-  '/all/security/readme.md': {
-    path: '/all/security/readme.md',
-    type: 'file',
-    content: 'Thanks for reading me me. But there is nothing here.'
-  },
-  '/all/defense': {
-    path: '/all/defense',
-    type: 'folder',
-    children: ['/all/defense/strategy.txt','/all/defense/readme.md'],
-  },
-  '/all/defense/readme.md': {
-    path: '/all/defense/readme.md',
-    type: 'file',
-    content: 'There is nothing here either'
-  },
-  '/all/defense/strategy.txt': {
-    path: '/all/defense/strategy.txt',
-    type: 'file',
-    content: 'Ipsum Lorem blahblah.'
-  }
-};
+const data = lookupBlock();
+console.log(data);
 
 export default class Tree extends Component {
 
@@ -44,9 +14,11 @@ export default class Tree extends Component {
     nodes: data,
   };
 
+
+
   getRootNodes = () => {
     const { nodes } = this.state;
-    return values(nodes).filter(node => node.isRoot === true);
+    return values(nodes);
   }
 
   getChildNodes = (node) => {
