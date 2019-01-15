@@ -11,7 +11,6 @@ import (
 	"google.golang.org/appengine"
 	"github.com/gomodule/redigo/redis"
 	"os"
-
 )
 
 //google cloud memorystore
@@ -67,7 +66,7 @@ func displayJson(w http.ResponseWriter, r *http.Request) {
 			strings.HasPrefix(rec.TargetId, target_id) &&
 			(target_size == "" || strconv.Itoa(rec.TargetSize) == target_size) &&
 			(token_size == "" ||  strconv.Itoa(rec.TokenSize) == token_size)  {
-			fmt.Fprint(w, string(data))
+			fmt.Fprint(w, data))
 		}
 		rec = Recipe{}
 	
@@ -108,7 +107,6 @@ func serveRawFile(w http.ResponseWriter, r *http.Request) {
 
 func newRouter() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/", incrementHandler)
 	r.HandleFunc("/search", displayJson).Methods("GET")
 	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("build"))) //path to be updated 
@@ -131,7 +129,6 @@ func incrementHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
 func init(){
 	r := newRouter()	
 	http.Handle("/", r)
@@ -140,13 +137,12 @@ func init(){
 
 func main() {
 	appengine.Main() // Starts the server to receive requests
-	
+
 	redisHost := os.Getenv("REDISHOST")
     redisPort := os.Getenv("REDISPORT")
     redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
 
     const maxConnections = 10
     redisPool = redis.NewPool(func() (redis.Conn, error) {
-        return redis.Dial("tcp", redisAddr)}, maxConnections)
-
+		return redis.Dial("tcp", redisAddr)}, maxConnections)
 }
