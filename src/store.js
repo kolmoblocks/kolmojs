@@ -79,7 +79,7 @@ export function lookupBlock(cid='') {
             selected = JSON.parse(error.responseText);
         }
     });
-    console.log(selected.toString());
+    console.log(selected);
     return selected;
 };
 

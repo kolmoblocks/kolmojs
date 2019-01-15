@@ -35,15 +35,16 @@ const TreeNode = (props) => {
     <React.Fragment>
       <StyledTreeNode level={level} type={node.type}>
         <NodeIcon onClick={() => onToggle(node)}>
-          { node.type === 'folder' && (node.isOpen ? <FaChevronDown /> : <FaChevronRight />) }
+          {/* node.type === 'folder' &&  */}
+          {/* taken out because all nodes can be expanded */}
+          { (node.isOpen ? <FaChevronDown /> : <FaChevronRight />) }
         </NodeIcon>
         
         <NodeIcon marginRight={10}>
-          { node.type === 'file' && <FaFile /> }
-          { node.type === 'folder' && node.isOpen === true && <FaFolderOpen /> }
-          { node.type === 'folder' && !node.isOpen && <FaFolder /> }
+          {/* { node.type === 'file' && <FaFile /> } */}
+          { /*node.type === 'folder' && */node.isOpen === true && <FaFolderOpen /> }
+          {/* { node.type === 'folder' && */ !node.isOpen && <FaFolder /> }
         </NodeIcon>
-        
 
         <span role="button" onClick={() => onNodeSelect(node)}>
           { getNodeLabel(node) }

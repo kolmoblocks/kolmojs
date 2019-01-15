@@ -5,8 +5,7 @@ import PropTypes from 'prop-types';
 import TreeNode from './TreeNode';
 import { lookupBlock } from '../store';
 
-const data = lookupBlock();
-console.log(data);
+const data = lookupBlock().map(val => val['target_id'] );
 
 export default class Tree extends Component {
 
@@ -14,17 +13,14 @@ export default class Tree extends Component {
     nodes: data,
   };
 
-
-
   getRootNodes = () => {
     const { nodes } = this.state;
     return values(nodes);
   }
 
   getChildNodes = (node) => {
-    const { nodes } = this.state;
     if (!node.children) return [];
-    return node.children.map(path => nodes[path]);
+    return node.target_id.map(hash => lookupBlock(hash));
   }  
 
   onToggle = (node) => {
