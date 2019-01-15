@@ -13,13 +13,10 @@ import (
 	"os"
 )
 
-//google cloud memorystore
 
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
+var (
+	redisPool *redis.Pool
+)
 
 
 type Recipe struct {
@@ -28,6 +25,12 @@ type Recipe struct {
 	TargetSize 	int 	`json:"target_size"`
 	TargetTag 	string 	`json:"target_tag"`
 	TokenSize 	int 	`json:"token_size"`
+}
+
+
+type Hash struct{
+	JsonData 	string
+	RawData		[]byte 		 
 }
 
 
@@ -73,6 +76,7 @@ func displayJson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
 func serveRawFile(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var mime string
@@ -105,27 +109,46 @@ func serveRawFile(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func newRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/search", displayJson).Methods("GET")
-	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("build"))) //path to be updated 
-	return r
+func getHash(cid string) (Hash, error) {
+	var h Hash
+	conn := pool.Get()
+	defer conn.Close()
+	h.JsonData, err := redis.String(c.Do("HGET", cid, "json") 
+	if err != nil{
+		return h, err	
+	}
+	h.RawData, err := redis.Bytes(c.Do("HGET", cid "raw") 
+	if err != nil{
+		return h, err	
+	}
+	return h, nil
 }
 
 
-var redisPool *redis.Pool
+func serveRawFromRedis(w http.ResponseWriter, r *http.Request){
+	var rec Recipe
 
-func incrementHandler(w http.ResponseWriter, r *http.Request) {
-        conn := redisPool.Get()
-        defer conn.Close()
+	vars := mux.Vars(r)
+	h, err := getHash(vars["cid"])
+	if err != nil{ 
+		http.Error(w, err.Error(), 500)
+		return
+	}	
+	Json.Unmarshal([]byte(h.JsonData), &rec)
+	if rec.Mime != "" {	
+		w.Header().Set("Content-Type", rec.Mime)
+	}
+	w.Write(h.RawData)
+}
 
-        counter, err := redis.Int(conn.Do("INCR", "visits"))
-        if err != nil {
-                http.Error(w, "Error incrementing visitor counter", http.StatusInternalServerError)
-                return
-        }
-        fmt.Fprintf(w, "Visitor number: %d", counter)
+
+func newRouter() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/search", displayJson).Methods("GET")
+	r.HandleFunc("/raw/redis/{cid}", serveRawFromRedis).Methods("GET")
+	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("build"))) //path to be updated 
+	return r
 }
 
 
@@ -137,7 +160,7 @@ func init(){
 
 func main() {
 	appengine.Main() // Starts the server to receive requests
-
+	pool = newPool(redisServer)
 	redisHost := os.Getenv("REDISHOST")
     redisPort := os.Getenv("REDISPORT")
     redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
