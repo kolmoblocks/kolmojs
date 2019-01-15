@@ -9,6 +9,9 @@ import (
 	"strings"
 	"strconv"
 	"google.golang.org/appengine"
+	"github.com/gomodule/redigo/redis"
+	"os"
+
 )
 
 //google cloud memorystore
@@ -105,11 +108,28 @@ func serveRawFile(w http.ResponseWriter, r *http.Request) {
 
 func newRouter() *mux.Router {
 	r := mux.NewRouter()
+	r.HandleFunc("/", incrementHandler)
 	r.HandleFunc("/search", displayJson).Methods("GET")
 	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("build"))) //path to be updated 
 	return r
 }
+
+
+var redisPool *redis.Pool
+
+func incrementHandler(w http.ResponseWriter, r *http.Request) {
+        conn := redisPool.Get()
+        defer conn.Close()
+
+        counter, err := redis.Int(conn.Do("INCR", "visits"))
+        if err != nil {
+                http.Error(w, "Error incrementing visitor counter", http.StatusInternalServerError)
+                return
+        }
+        fmt.Fprintf(w, "Visitor number: %d", counter)
+}
+
 
 
 func init(){
@@ -120,4 +140,13 @@ func init(){
 
 func main() {
 	appengine.Main() // Starts the server to receive requests
+	
+	redisHost := os.Getenv("REDISHOST")
+    redisPort := os.Getenv("REDISPORT")
+    redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
+
+    const maxConnections = 10
+    redisPool = redis.NewPool(func() (redis.Conn, error) {
+        return redis.Dial("tcp", redisAddr)}, maxConnections)
+
 }

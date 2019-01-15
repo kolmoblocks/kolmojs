@@ -7,3 +7,13 @@ env: standard
 handlers:
 - url: /.*
   script: _go_app
+
+
+# Update with Redis instance details
+env_variables:
+  REDISHOST: '10.0.0.3'
+  REDISPORT: '6379'
+
+  # Update with Redis instance network name
+network:
+  name: kolmoredis
