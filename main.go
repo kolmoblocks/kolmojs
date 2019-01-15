@@ -11,14 +11,6 @@ import (
 	"strconv"
 )
 
-
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
-
-
 type Recipe struct {
 	Mime 	 	string 	`json:"MIME"`
 	TargetId 	string 	`json:"target_id"`
@@ -32,6 +24,7 @@ func displayJson(w http.ResponseWriter, r *http.Request) {
 	var filePath string
 	var rec Recipe
 	var data []byte
+	var jsons string
 	validSearchParams := map[string]bool{"cid": true, "target_size"	: true,
 	"target_id": true, "token_size": true,"target_tag": true}
 
@@ -50,24 +43,33 @@ func displayJson(w http.ResponseWriter, r *http.Request) {
 	target_id := r.FormValue("target_id")
 	token_size := r.FormValue("token_size")
 	publicPath := "out/public/" //path to be updated 
-	files, err := ioutil.ReadDir(publicPath)
-	check(err)
 	
+	files, err := ioutil.ReadDir(publicPath)
+	if err != nil{
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	for _, f := range files {
 		filePath = publicPath + f.Name() 
 		data, err = ioutil.ReadFile(filePath)
-		check(err)
 		json.Unmarshal([]byte(data), &rec)
 		if strings.HasPrefix(strings.TrimRight(f.Name(), ".json"), cid) && 
 			strings.HasPrefix(rec.TargetTag, target_tag) &&
 			strings.HasPrefix(rec.TargetId, target_id) &&
 			(target_size == "" || strconv.Itoa(rec.TargetSize) == target_size) &&
 			(token_size == "" ||  strconv.Itoa(rec.TokenSize) == token_size)  {
-			fmt.Fprint(w, string(data))
+			if len(jsons) > 0{
+				jsons = jsons + "," + string(data)
+			} else{
+				jsons = "[" + string(data)
+			}		
 		}
 		rec = Recipe{}
-	
 	}
+	jsons = jsons + "]"
+	fmt.Fprint(w,jsons)	
 }
 
 func serveRawFile(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +88,10 @@ func serveRawFile(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		metaDataPath = publicPath + f.Name() 
 		data, err = ioutil.ReadFile(metaDataPath)
-		check(err)
+		if err != nil{
+			http.Error(w, err.Error(), 500)
+			return
+		}
 		json.Unmarshal([]byte(data), &rec)
 		if vars["cid"] == rec.TargetId{
 			mime = rec.Mime
