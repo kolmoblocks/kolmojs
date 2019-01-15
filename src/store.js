@@ -1,7 +1,7 @@
 // kolmoblock renderer first
 var $ = require('jquery');
 
-export async function loadKolmoblock(manifest, canvas) {
+export async function loadBlock(manifest) {
     const wasm_response = await fetch('/raw/' + manifest['wasm_id']);
     const buffer = await wasm_response.arrayBuffer();
 
@@ -44,37 +44,38 @@ export async function loadKolmoblock(manifest, canvas) {
   
   
 	const outBuf = new Uint8Array(memory.buffer, offset, size);
-    // put outBuf INTO canvas, whatever that is in this case
-    canvas.text(outBuf);
-    return mm;
+    //return mm;
+    return outBuf;
 }
 
 
-// export function lookupBlock(cid) {
-//     $.ajax({
-//         url : '/search?cid=' + cid ,
-//         type : 'GET',
-//         dataType : 'json',
-//         context: document.body,
-//         success: function(json){
-//             this.blocks[json["target_id"]] = json;
-//             json['_root'] = this.blocks;
-//             json['_label'] =  json["target_id"].slice(0,10) + "...";
-//             if (json['kolmoblocks']) {
-//                 json['kolmoblocks']['_label'] = "k";
-//                 for (var each in json['kolmoblocks']) {
-//                     json['kolmoblocks'][each]['_root'] = json;
-//                     json['kolmoblocks'][each]['_label'] = each; 
-//                 }
-//             };
-//             this._selected = json;
-//         },
-//         error: function(error) {
-//             console.log("Failure loading " + cid);
-//             console.log(error);
-//         }
-//     });
-// };
+export function lookupBlock(cid='') {
+    let selected = {};
+    $.ajax({
+        url : '/search?cid=' + cid ,
+        type : 'GET',
+        dataType : 'json',
+        context: document.body,
+        success: function(json){
+            this.blocks[json["target_id"]] = json;
+            json['_root'] = this.blocks;
+            json['_label'] =  json["target_id"].slice(0,10) + "...";
+            if (json['kolmoblocks']) {
+                json['kolmoblocks']['_label'] = "k";
+                for (var each in json['kolmoblocks']) {
+                    json['kolmoblocks'][each]['_root'] = json;
+                    json['kolmoblocks'][each]['_label'] = each; 
+                }
+            };
+            selected = json;
+        },
+        error: function(error) {
+            console.log("Failure loading " + cid);
+            console.log(error);
+        }
+    });
+    return selected;
+};
 
 // export function renderBlock(cid, kb, target) {
 //     var manifest = this.blocks[cid]['kolmoblocks'][kb];

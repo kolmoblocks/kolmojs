@@ -14,7 +14,7 @@ class App extends Component {
         </header>
         <Router>
           <div>
-            <div class="align-items-center p-2">
+            <div className="align-items-center p-2">
               <Link to="/" className="btn">Home</Link>
               <Link to="/demo" className="btn">Demo</Link>
               <Link to="/render" className="btn">Render</Link>

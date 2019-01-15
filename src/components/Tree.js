@@ -70,12 +70,13 @@ export default class Tree extends Component {
     const rootNodes = this.getRootNodes();
     return (
       <div>
-        { rootNodes.map(node => (
+        { rootNodes.map((node, key) => (
           <TreeNode 
             node={node}
             getChildNodes={this.getChildNodes}
             onToggle={this.onToggle}
             onNodeSelect={this.onNodeSelect}
+            key={key}
           />
         ))}
       </div>

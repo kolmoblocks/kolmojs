@@ -29,7 +29,7 @@ const NodeIcon = styled.div`
 const getNodeLabel = (node) => last(node.path.split('/'));
 
 const TreeNode = (props) => {
-  const { node, getChildNodes, level, onToggle, onNodeSelect } = props;
+  const { node, getChildNodes, level, onToggle, onNodeSelect, key } = props;
 
   return (
     <React.Fragment>
@@ -71,6 +71,7 @@ TreeNode.propTypes = {
 
 TreeNode.defaultProps = {
   level: 0,
+  key: Number
 };
 
 export default TreeNode;
