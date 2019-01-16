@@ -45,7 +45,7 @@ export default class Render extends Component {
           </TreeWrapper>
         </div>
         <div className="col-12 col-md-7">
-          {selected && selected.type === 'file' ?
+          {selected && selected.type === 'node' ?
             <File onRenderselected={this.onRenderSelected} selected={selected}/>
             : <h5>Select a file to view options</h5>
           }
