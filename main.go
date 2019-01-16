@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"strings"
 	"strconv"
-	"google.golang.org/appengine"
 	"github.com/gomodule/redigo/redis"
 	"os"
+	"log"
 )
 
 
@@ -69,7 +69,7 @@ func displayJson(w http.ResponseWriter, r *http.Request) {
 			strings.HasPrefix(rec.TargetId, target_id) &&
 			(target_size == "" || strconv.Itoa(rec.TargetSize) == target_size) &&
 			(token_size == "" ||  strconv.Itoa(rec.TokenSize) == token_size)  {
-			fmt.Fprint(w, data))
+			fmt.Fprint(w, string(data))
 		}
 		rec = Recipe{}
 	
@@ -99,51 +99,100 @@ func serveRawFile(w http.ResponseWriter, r *http.Request) {
 			mime = rec.Mime
 		}	
 	}
-	
+
 	//Sets http response header (Content-type) based on MIME
 	if mime != "" {	
 		w.Header().Set("Content-Type", mime)
 	}
 	filePath = rawPath + vars["cid"]
-	http.ServeFile(w, r, filePath)
+	data, err = ioutil.ReadFile(filePath)
+	fmt.Fprint(w,data)
+}
+
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
 }
 
 
 func getHash(cid string) (Hash, error) {
 	var h Hash
-	conn := pool.Get()
+	conn := redisPool.Get()
 	defer conn.Close()
-	h.JsonData, err := redis.String(c.Do("HGET", cid, "json") 
+
+	if err := ping(conn); err != nil{
+		return h, err
+	}
+
+	jsonData, err := redis.String(conn.Do("HGET", cid, "json")) 
 	if err != nil{
 		return h, err	
+	} else {
+		h.JsonData = jsonData
 	}
-	h.RawData, err := redis.Bytes(c.Do("HGET", cid "raw") 
+
+	rawData, err := redis.Bytes(conn.Do("HGET", cid, "raw")) 
 	if err != nil{
 		return h, err	
+	} else {
+		h.RawData = rawData
 	}
+
 	return h, nil
 }
 
 
 func serveRawFromRedis(w http.ResponseWriter, r *http.Request){
 	var rec Recipe
-
 	vars := mux.Vars(r)
+	
 	h, err := getHash(vars["cid"])
 	if err != nil{ 
 		http.Error(w, err.Error(), 500)
 		return
 	}	
-	Json.Unmarshal([]byte(h.JsonData), &rec)
+	
+	json.Unmarshal([]byte(h.JsonData), &rec)
 	if rec.Mime != "" {	
 		w.Header().Set("Content-Type", rec.Mime)
 	}
-	w.Write(h.RawData)
+	
+	fmt.Fprintf(w, "Json:%s\n", h.JsonData)
+	fmt.Fprintf(w, "Raw:%s\n", h.RawData)
+
+}
+
+
+func insertHash(w http.ResponseWriter, r *http.Request){
+	conn := redisPool.Get()
+	defer conn.Close()
+
+	vars := mux.Vars(r)
+
+	_, err := conn.Do("HMSET", vars["key"], "json",vars["json"], "raw", vars["raw"])
+	
+	if err != nil{
+		fmt.Fprint(w, "Insertion FAIL")
+	} else {
+		fmt.Fprint(w, "OK")
+	}
+}
+
+
+func ping(conn redis.Conn) error {
+	_, err := redis.String(conn.Do("PING"))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 
 func newRouter() *mux.Router {
 	r := mux.NewRouter()
+	r.HandleFunc("/insert/hash/{key}/{json}/{raw}", insertHash)
 	r.HandleFunc("/search", displayJson).Methods("GET")
 	r.HandleFunc("/raw/redis/{cid}", serveRawFromRedis).Methods("GET")
 	r.HandleFunc("/raw/{cid}", serveRawFile).Methods("GET")
@@ -152,15 +201,7 @@ func newRouter() *mux.Router {
 }
 
 
-func init(){
-	r := newRouter()	
-	http.Handle("/", r)
-}
-
-
 func main() {
-	appengine.Main() // Starts the server to receive requests
-	pool = newPool(redisServer)
 	redisHost := os.Getenv("REDISHOST")
     redisPort := os.Getenv("REDISPORT")
     redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
@@ -168,4 +209,7 @@ func main() {
     const maxConnections = 10
     redisPool = redis.NewPool(func() (redis.Conn, error) {
 		return redis.Dial("tcp", redisAddr)}, maxConnections)
+	r := newRouter()	
+	log.Fatal(http.ListenAndServe(":8080", r))
+
 }
