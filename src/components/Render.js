@@ -5,7 +5,7 @@ import File from './File'
 import {loadBlock, lookupBlock} from './../store';
 
 const TreeWrapper = styled.div`
-  width: 250px;
+  width: 400px;
 `;
 
 export default class Render extends Component { 

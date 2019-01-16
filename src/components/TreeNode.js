@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaFile, FaFolder, FaFolderOpen, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import styled from 'styled-components';
-import last from 'lodash/last';
+import keys from 'lodash/keys';
 import PropTypes from 'prop-types';
 
 const getPaddingLeft = (level, type) => {
@@ -26,15 +26,24 @@ const NodeIcon = styled.div`
   margin-right: ${props => props.marginRight ? props.marginRight : 5}px;
 `;
 
+const NodeProp = styled.div`
+  float: right;
+`;
+
 const TreeNode = (props) => {
-  const { node, getChildNodes, level, onToggle, onNodeSelect, key } = props;
-  const cNodes = getChildNodes(key);
-  console.log(key);
-  console.log(node);
+  const { node, getChildNodes, level, onToggle, onNodeSelect, loc } = props;
+  const cNodes = getChildNodes(loc);
+  //console.log(cNodes);
+  if (cNodes['type'] == 'property') {
+    console.log(node);
+  }
   return (
     <React.Fragment>
       
       <StyledTreeNode level={level} type={node.type}>
+        {/* isOpen will always be false for properties, so it will never be triggered.
+            This is how we handle the base case for the recursive tree; that is, by 
+            checking if the treeNode is open. */}
         <NodeIcon onClick={() => onToggle(node)}>
           { node.type == 'node' && (node.isOpen ? <FaChevronDown /> : <FaChevronRight />) }
         </NodeIcon>
@@ -46,25 +55,28 @@ const TreeNode = (props) => {
         </NodeIcon>
 
         <span role="button" onClick={() => onNodeSelect(node)}>
-          { node['target_id'] } {/* VAL STUFF GOES HERE */}
+          { loc } 
         </span>
+        <NodeProp>
+          {node.type === 'property' ? " = " + node.val : ''}
+        </NodeProp>
       </StyledTreeNode>
+      
 
-      {/* start here tomorrow! ************************************************************************** */}
-      { node.isOpen && Object.keys(cNodes).forEach( function(nkey) {
-        <TreeNode {...props} node={cNodes[nkey]} level={level + 1} key={nkey}/>
-      })}
+      { node.isOpen && keys(node).map((nkey) => (
+        <TreeNode getChildNodes={getChildNodes} onNodeSelect={onNodeSelect} onToggle={onToggle} node={cNodes[nkey]} level={level + 1} loc={nkey}/>
+      ))}
     </React.Fragment>
   );
 }
 
 TreeNode.propTypes = {
-  node: PropTypes.object.isRequired,
+  node: PropTypes.any.isRequired,
   getChildNodes: PropTypes.func.isRequired,
   level: PropTypes.number.isRequired,
   onToggle: PropTypes.func.isRequired,
   onNodeSelect: PropTypes.func.isRequired,
-  key: PropTypes.any.isRequired,
+  loc: PropTypes.any.isRequired,
 };
 
 TreeNode.defaultProps = {

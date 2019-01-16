@@ -4,6 +4,13 @@ import PropTypes from 'prop-types';
 
 import TreeNode from './TreeNode';
 import { lookupBlock } from '../store';
+import styled from 'styled-components';
+
+const StyledTree = styled.div`
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 50vh;
+`;
 
 export default class Tree extends Component {
 
@@ -41,19 +48,26 @@ export default class Tree extends Component {
   // parse down the node content to each property and node as objects
   getChildNodes = (key) => {
     const { nodes } = this.state;
-    let mani = lookupBlock(key);
+    let mani = nodes[key];
+    //console.log(mani);
     let content = {};
-    Object.keys(mani).forEach(function(key) {
-      if (key == 'kolmoblocks') {
-        console.log("HANDLE THIS SHIT!");
-      }else{
-        content[key] = {
-          type: 'property',
-          isOpen: false,
-          val: mani[key]
+    if (mani) {
+      Object.keys(mani).forEach(function(nkey) {
+        if (nkey == 'kolmoblocks') {
+          content[nkey] = { // CHANGE THIS!
+            type: 'node',
+            isOpen: false,
+            val: mani['kolmoblocks']
+          }
+        }else{
+          content[nkey] = {
+            type: 'property',
+            isOpen: false,
+            val: mani[nkey]
+          }
         }
-      }
-    })
+      })
+    }
     return content;
   }  
 
@@ -75,17 +89,17 @@ export default class Tree extends Component {
   render() {
     const rootNodes = this.getRootNodes();
     return (
-      <div>
+      <StyledTree>
         { rootNodes.map((node) => (
           <TreeNode 
             node={node}
             getChildNodes={this.getChildNodes}
             onToggle={this.onToggle}
             onNodeSelect={this.onNodeSelect}
-            key={node['target_id']}
+            loc={node['target_id']}
           />
         ))}
-      </div>
+      </StyledTree>
     )
   }
 }
