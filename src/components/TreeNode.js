@@ -26,38 +26,34 @@ const NodeIcon = styled.div`
   margin-right: ${props => props.marginRight ? props.marginRight : 5}px;
 `;
 
-const getNodeLabel = (node) => last(node.path.split('/'));
-
 const TreeNode = (props) => {
   const { node, getChildNodes, level, onToggle, onNodeSelect, key } = props;
-
+  const cNodes = getChildNodes(key);
+  console.log(key);
+  console.log(node);
   return (
     <React.Fragment>
+      
       <StyledTreeNode level={level} type={node.type}>
         <NodeIcon onClick={() => onToggle(node)}>
-          {/* node.type === 'folder' &&  */}
-          {/* taken out because all nodes can be expanded */}
-          { (node.isOpen ? <FaChevronDown /> : <FaChevronRight />) }
+          { node.type == 'node' && (node.isOpen ? <FaChevronDown /> : <FaChevronRight />) }
         </NodeIcon>
         
         <NodeIcon marginRight={10}>
-          {/* { node.type === 'file' && <FaFile /> } */}
-          { /*node.type === 'folder' && */node.isOpen === true && <FaFolderOpen /> }
-          {/* { node.type === 'folder' && */ !node.isOpen && <FaFolder /> }
+          { node.type === 'property' && <FaFile /> }
+          { node.type === 'node' && node.isOpen === true && <FaFolderOpen /> }
+          { node.type === 'node' && !node.isOpen && <FaFolder /> }
         </NodeIcon>
 
         <span role="button" onClick={() => onNodeSelect(node)}>
-          { getNodeLabel(node) }
+          { node['target_id'] } {/* VAL STUFF GOES HERE */}
         </span>
       </StyledTreeNode>
 
-      { node.isOpen && getChildNodes(node).map(childNode => (
-        <TreeNode 
-          {...props}
-          node={childNode}          
-          level={level + 1}
-        />
-      ))}
+      {/* start here tomorrow! ************************************************************************** */}
+      { node.isOpen && Object.keys(cNodes).forEach( function(nkey) {
+        <TreeNode {...props} node={cNodes[nkey]} level={level + 1} key={nkey}/>
+      })}
     </React.Fragment>
   );
 }
@@ -68,11 +64,11 @@ TreeNode.propTypes = {
   level: PropTypes.number.isRequired,
   onToggle: PropTypes.func.isRequired,
   onNodeSelect: PropTypes.func.isRequired,
+  key: PropTypes.any.isRequired,
 };
 
 TreeNode.defaultProps = {
   level: 0,
-  key: Number
 };
 
 export default TreeNode;
