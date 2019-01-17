@@ -44,13 +44,11 @@ export async function loadBlock(manifest) {
   
   
 	const outBuf = new Uint8Array(memory.buffer, offset, size);
-    //return mm;
     return outBuf;
 }
 
 
 export async function lookupBlock(cid='') {
-    let selected = [];
     let theUrl = (cid===''? '/search' : '/search?cid=');
 
     return Promise.all([

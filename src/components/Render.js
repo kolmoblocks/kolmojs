@@ -11,24 +11,24 @@ const TreeWrapper = styled.div`
 export default class Render extends Component { 
   state = {
     selected: null,
+    rendered: null
   };
 
   onSelect = (file) => {
-    console.log("HERE!");
     this.setState({ selected: file });
   }
 
-  onRenderSelected = (data) => {
-    this.setState({rendered: data});
+ renderSelected = (recipe) => {
+   console.log(recipe);
+    loadBlock(recipe).then((data) => {
+      let decoded = new TextDecoder("utf-8").decode(data);
+      console.log(decoded);
+      this.setState({rendered: decoded}, ()=>{console.log("state set")});
+    });
   }
-  
-  renderContent = (content) => {
-    return content;
-  };
 
   render() {
     const { selected, rendered } = this.state;
-
     return (
     <div className="container">
       <div className="row">
@@ -46,7 +46,7 @@ export default class Render extends Component {
         </div>
         <div className="col-12 col-md-7">
           {selected && selected.type === 'node' ?
-            <File onRenderselected={this.onRenderSelected} selected={selected}/>
+            <File renderSelected={this.renderSelected} selected={selected}/>
             : <h5>Select a file to view options</h5>
           }
         </div>

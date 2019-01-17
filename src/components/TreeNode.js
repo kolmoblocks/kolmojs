@@ -65,7 +65,8 @@ const TreeNode = (props) => {
 
       { node.isOpen && keys(node).map((nkey) => (
         <TreeNode getChildNodes={getChildNodes} onNodeSelect={onNodeSelect} onToggle={onToggle} node={cNodes[nkey]} level={level + 1} loc={nkey}/>
-      ))}
+      ))/*work needed here to complete kolmoblock recipe display logic!!! */}
+      
     </React.Fragment>
   );
 }
