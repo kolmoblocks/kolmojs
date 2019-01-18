@@ -18,6 +18,7 @@ export default class Tree extends Component {
     nodes: {},
   };
 
+  // initial object population
   async componentDidMount() {
     try {
       let nodes = {};
@@ -38,7 +39,7 @@ export default class Tree extends Component {
     }
   }
 
-  // initial object population
+  // recurrent object population
   getRootNodes = () => {
     const { nodes } = this.state;
     return values(nodes);
