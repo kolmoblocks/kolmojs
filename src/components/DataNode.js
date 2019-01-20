@@ -66,7 +66,7 @@ export default class DataNode extends Component {
                     </StyledDataProp>
                     {this.state.refs.map((ref) => (
                         <DataExprWrapper dataExprWrapperStyle={dataExprWrapperStyle}>
-                            {JSON.stringify(exprBody['data_expressions'][this.state.refs.indexOf(ref)]);}
+                            {JSON.stringify(exprBody['data_expressions'][this.state.refs.indexOf(ref)])}
                         </DataExprWrapper>
                     ))}
                 </StyledDataNode>
@@ -81,7 +81,7 @@ DataNode.propTypes = {
     cid: PropTypes.string.isRequired,
     dataNodeStyle: PropTypes.string,
     dataPropStyle: PropTypes.string,
-    nodeIconStyle: PropTypes.string
+    nodeIconStyle: PropTypes.string,
     dataExprWrapperStyle: PropTypes.string
 }
 
@@ -90,6 +90,8 @@ DataNode.defaultProps = {
     requested: false,
     dataNodeStyle: "display: flex; flex-direction: col;",
     dataPropStyle: "max-height: 100px; overflow-y: hidden;",
-    nodeIconStyle: "margin-right: 5px;"
+    nodeIconStyle: "margin-right: 5px;",
     dataExprWrapperStyle: "max-height: 85px;"
 }
+
+export default DataNode;

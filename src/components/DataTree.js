@@ -36,3 +36,5 @@ DataTree.propTypes = {
 DataNode.defaultProps = {
     dataTreeStyle: "max-width: 50vw;"
 }
+
+export default DataTree;
