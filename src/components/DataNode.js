@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import {MdCloudDownload, MdCloudDone} from 'react-icons/md'; // possible failure in either
 import {IoMdRemove, IoMdAdd} from 'react-icons/io'
 import PropTypes from 'prop-types';
-const KBStorage = require('../proto/BrowserScript/KBstorage.js');
+import KBStorage from '../proto/BrowserScript/KBstorage';
+const KBStore = new KBStorage();
 
     
 const StyledDataNode = styled.div`
@@ -44,14 +45,19 @@ class DataNode extends Component {
 
     async componentDidMount() {
         let exp = "{ \"cid\" : \"" + this.props.cid + "\" }";
-        let isInCache = await KBStorage.ExpressionInCache(exp);
+        let isInCache = await KBStore.ExpressionInCache(exp);
         this.setState({inCache: isInCache});
     }
 
     async loadContent(cid) {
         // more actions here
         // populate expr, populate refs
-        this.setState({loaded: true});
+        try {
+            this.setState({loaded: true});
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
     render() {
@@ -70,6 +76,7 @@ class DataNode extends Component {
                         <NodeIcon nodeIconStyle={nodeIconStyle} onClick={() => this.loadContent(cid)}>
                             { this.state.loaded ? <IoMdRemove/> : <IoMdAdd/> }
                         </NodeIcon>
+                        {cid}
                     </NodeLabel>
 
                     { this.state.loaded ? 
