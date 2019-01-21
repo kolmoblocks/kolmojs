@@ -59,6 +59,7 @@ export default class DataNode extends Component {
                     <StyledDataProp dataPropStyle={dataPropStyle}>
                         {JSON.stringify(noDataExpr, null, 2)};
                     </StyledDataProp>
+
                     {this.state.refs.map((ref) => (
                         <DataExprWrapper dataExprWrapperStyle={dataExprWrapperStyle}>
                             {JSON.stringify(expr['data_expressions'][this.state.refs.indexOf(ref)])}

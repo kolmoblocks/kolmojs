@@ -15,10 +15,11 @@ export default class DataComponent extends Component {
     async renderContent(expr) {
         // this is only when expr == this.props.root.expr
         try {
-            this.rendered = await KBStorage.GetData(expr);
+            content = await KBStorage.GetData(expr);
+            this.setState({rendered: content})
         }
         catch (error) {
-            this.rendered = error;
+            console.log(error);
         }
     }
 
@@ -27,9 +28,14 @@ export default class DataComponent extends Component {
         return (
         <div className="container">
             <div className="row">
+                <div className="col-12"> 
+                    <h5>label = {root.label}</h5>
+                </div>
+            </div>
+            <div className="row">
                 <div className="col-4">
                     <DataTreeWrapper dataTreeStyle={dataTreeStyle}>
-                        <DataNode expr={val.expr} renderContent={this.renderContent} />
+                        <DataNode expr={root.expr} renderContent={this.renderContent} />
                     </DataTreeWrapper>
                 </div>
                 <div classname="col-8">
@@ -44,6 +50,7 @@ export default class DataComponent extends Component {
 }
 
 DataTree.propTypes = {
+    root: PropTypes.object.isRequired,
     dataTreeStyle: PropTypes.string
 }
 
