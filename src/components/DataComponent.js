@@ -8,9 +8,16 @@ const DataTreeWrapper = styled.div`
     ${props => props.dataTreeStyle}
 `; 
 export default class DataComponent extends Component {
-    state = {
-        rendered: null
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            rendered: null
+        }
+        this.renderContent = this.renderContent.bind(this);
+        
     }
+    
     
     async renderContent(expr) {
         // should render content with provided expression
@@ -40,7 +47,7 @@ export default class DataComponent extends Component {
                         <DataNode cid={root.cid} renderContent={this.renderContent} />
                     </DataTreeWrapper>
                 </div>
-                <div classname="col-8">
+                <div className="col-8">
                     <div id="rendered-content" className="jumbotron">
                         { this.state.rendered ? this.state.rendered : <h5>Rendered content will appear here</h5>}
                     </div>
