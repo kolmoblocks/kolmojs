@@ -1,8 +1,8 @@
 var fs = require("fs");
 
-const isBrowser = this.window === this;
+const isBrowser = false;
 
-module.exports = class KBserver
+export default class KBserver
 {
 
     constructor(){

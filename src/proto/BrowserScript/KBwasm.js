@@ -1,4 +1,4 @@
-module.exports = class KBWasm
+export default class KBWasm
 {
     constructor(raw_wasm, args)
     {

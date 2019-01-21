@@ -1,7 +1,7 @@
  import React, {Component} from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import DataNode from 'DataNode.js';
+import DataNode from './DataNode';
 const KBStorage = require('../proto/BrowserScript/KBstorage.js');
 
 const DataTreeWrapper = styled.div`
@@ -13,13 +13,15 @@ export default class DataComponent extends Component {
     }
     
     async renderContent(expr) {
+        // should render content with provided expression
+        // cycles? don't worry bout that yet
         // this is only when expr == this.props.root.expr
         try {
-            content = await KBStorage.GetData(expr);
+            let content = await KBStorage.GetData(expr);
             this.setState({rendered: content})
         }
         catch (error) {
-            console.log(error);
+            this.setState({rendered: error});
         }
     }
 
@@ -35,7 +37,7 @@ export default class DataComponent extends Component {
             <div className="row">
                 <div className="col-4">
                     <DataTreeWrapper dataTreeStyle={dataTreeStyle}>
-                        <DataNode expr={root.expr} renderContent={this.renderContent} />
+                        <DataNode cid={root.cid} renderContent={this.renderContent} />
                     </DataTreeWrapper>
                 </div>
                 <div classname="col-8">
@@ -49,13 +51,11 @@ export default class DataComponent extends Component {
     }
 }
 
-DataTree.propTypes = {
+DataComponent.propTypes = {
     root: PropTypes.object.isRequired,
     dataTreeStyle: PropTypes.string
 }
 
-DataNode.defaultProps = {
+DataComponent.defaultProps = {
     dataTreeStyle: "max-width: 50vw;"
 }
-
-export default DataComponent;

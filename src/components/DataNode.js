@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import {MdCloudDownload, MdCloudDone} from 'react-icons/md'; // possible failure in either
-import {IoMinus, IoPlus} from 'react-icons/lib/io'
+import {IoMdRemove, IoMdAdd} from 'react-icons/io'
 import PropTypes from 'prop-types';
+const KBStorage = require('../proto/BrowserScript/KBstorage.js');
+
     
 const StyledDataNode = styled.div`
     ${props => props.dataNodeStyle}
@@ -20,7 +22,7 @@ const NodeIcon = styled.div`
     ${props => props.nodeIconStyle}
 `;
 
-export default class DataNode extends Component {
+class DataNode extends Component {
     constructor(props) {
         super(props);
         this.state.requested = this.props.requested;
@@ -33,11 +35,19 @@ export default class DataNode extends Component {
         requested: false,
         inCache: false, // ADD SOMETHING TO DETERMINE IN CACHE OR NOT
         loaded: false,
+        expr: {},
         refs: []
     }
 
+    async componentDidMount() {
+            let exp = "{ \"cid\" : \"" + this.props.cid + "\" }";
+            let isInCache = await KBStorage.ExpressionInCache(exp);
+            this.setState({inCache: isInCache});
+    }
+
     loadContent = (cid) => {
-        // 
+        // more actions here
+        this.setState({loaded: true});
     }
 
     render() {
@@ -50,10 +60,10 @@ export default class DataNode extends Component {
             <React.Fragment>
                 <StyledDataNode dataNodeStyle={dataNodeStyle}>
                     <NodeIcon nodeIconStyle={nodeIconStyle} onClick={() => renderContent(cid)}>
-                        { inCache ? <MdCloudDownload /> : <MdCloudDone/> }
+                        { this.state.inCache ? <MdCloudDownload /> : <MdCloudDone/> }
                     </NodeIcon>
-                    <NodeIcon nodeIconStyle={nodeIconStyle} onClick={() => loadContent(cid)}>
-                        { loaded ? <IoMinus/> : <IoPlus/> }
+                    <NodeIcon nodeIconStyle={nodeIconStyle} onClick={() => this.loadContent(cid)}>
+                        { this.state.loaded ? <IoMdRemove/> : <IoMdAdd/> }
                     </NodeIcon>
 
                     <StyledDataProp dataPropStyle={dataPropStyle}>

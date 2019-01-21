@@ -1,6 +1,6 @@
 const KBserver = require('..//Server//KBserver.js')
 
-module.exports = class KBcache
+export default class KBcache
 {
 
     constructor(){

@@ -2,7 +2,7 @@ const KBcache = require('.//KBcache.js')
 
 const KBwasm = require('.//KBwasm.js')
 
-module.exports = class KBstorage
+export default class KBstorage
 {
     constructor(path)
     {
