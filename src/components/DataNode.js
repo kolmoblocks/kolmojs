@@ -3,19 +3,18 @@ import styled from 'styled-components';
 import {MdCloudDownload, MdCloudDone} from 'react-icons/md'; // possible failure in either
 import {IoMdRemove, IoMdAdd} from 'react-icons/io'
 import PropTypes from 'prop-types';
-import KBStorage from '../proto/BrowserScript/KBstorage';
-const KBStore = new KBStorage();
+import { ExpressionInCache, ParseExpression } from '../store.js';
 
     
 const StyledDataNode = styled.div`
     ${props => props.dataNodeStyle}
 `;
 
-const StyledDataProp = styled.div`
+const StyledDataProp = styled.pre`
     ${props => props.dataPropStyle}
 `;
 
-const DataExprWrapper = styled.div`
+const DataExprWrapper = styled.pre`
     ${props => props.dataExprWrapperStyle}
 `;
 
@@ -23,9 +22,18 @@ const NodeIcon = styled.div`
     ${props => props.nodeIconStyle}
 `;
 
-const NodeLabel = styled.div`
+const NodeLabel = styled.pre`
     display: flex;
     flex-direction: row;
+    width: 100%;
+`;
+
+const FitToParent = styled.div`
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `;
 
 class DataNode extends Component {
@@ -35,6 +43,7 @@ class DataNode extends Component {
             requested: false,
             inCache: false, // ADD SOMETHING TO DETERMINE IN CACHE OR NOT
             loaded: false,
+            alreadyLoaded: false,
             expr: {
                 data_expressions:[]
             },
@@ -45,18 +54,36 @@ class DataNode extends Component {
 
     async componentDidMount() {
         let exp = "{ \"cid\" : \"" + this.props.cid + "\" }";
-        let isInCache = await KBStore.ExpressionInCache(exp);
+        let isInCache = await ExpressionInCache(exp);
         this.setState({inCache: isInCache});
     }
 
     async loadContent(cid) {
         // more actions here
         // populate expr, populate refs
-        try {
-            this.setState({loaded: true});
+        if (this.state.alreadyLoaded && this.state.loaded) {
+            this.setState({loaded: false});
         }
-        catch (error) {
-            console.log(error);
+        else {
+            if (!this.state.alreadyLoaded) {
+                try {
+                    let myExpr = await ParseExpression( "{ \"cid\" : \"" + cid + "\" }");
+                    let myRefs = [];
+
+                    myExpr['data_expressions'].forEach(function(val, key){
+                        myRefs[key] = React.createRef();
+                    })
+
+                    this.setState({refs: myRefs});
+                    this.setState({expr: myExpr});
+                    this.setState({loaded: true});
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                this.setState({alreadyLoaded: true});
+            }
+            this.setState({loaded: true});
         }
     }
 
@@ -76,20 +103,23 @@ class DataNode extends Component {
                         <NodeIcon nodeIconStyle={nodeIconStyle} onClick={() => this.loadContent(cid)}>
                             { this.state.loaded ? <IoMdRemove/> : <IoMdAdd/> }
                         </NodeIcon>
-                        {cid}
+                        <FitToParent>
+                            {JSON.stringify(cid, null, 2)}
+                        </FitToParent>
                     </NodeLabel>
-
+                    { this.state.loaded ? "Properties: " : ""}
                     { this.state.loaded ? 
                     <StyledDataProp dataPropStyle={dataPropStyle}>
                         {JSON.stringify(noDataExpr, null, 2)};
-                    </StyledDataProp>
-                    :
+                    </StyledDataProp> : ""}
+                    { this.state.loaded ? "Dependencies: " : ""}
+                    { this.state.loaded ? 
                     this.state.refs.map((ref) => (
                         <DataExprWrapper dataExprWrapperStyle={dataExprWrapperStyle} ref={ref}>
-                            {JSON.stringify(this.state.expr['data_expressions'][this.state.refs.indexOf(ref)])}
+                            {JSON.stringify(this.state.expr['data_expressions'][this.state.refs.indexOf(ref)], null, 2)}
                         </DataExprWrapper>
                     ))
-                    }
+                    : "" }
                 </StyledDataNode>
             </React.Fragment>
         )
@@ -109,10 +139,10 @@ DataNode.propTypes = {
 DataNode.defaultProps = {
     inCache: false,
     requested: false,
-    dataNodeStyle: "display: flex; flex-direction: col;  border: 1px solid;",
-    dataPropStyle: "max-height: 100px; overflow-y: hidden;  border: 1px solid;",
+    dataNodeStyle: "display: flex; flex-direction: column;  border: 1px solid; text-align: left; text-sized: ",
+    dataPropStyle: "overflow-y: hidden;  border: 1px solid;",
     nodeIconStyle: "margin-right: 5px;",
-    dataExprWrapperStyle: "max-height: 85px; border: 1px solid;"
+    dataExprWrapperStyle: "border: 1px solid;"
 }
 
 export default DataNode;
