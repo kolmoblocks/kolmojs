@@ -1,5 +1,20 @@
-// kolmoblock renderer first
-var $ = require('jquery');
+import KBstorage from './proto/BrowserScript/KBstorage';
+
+const KBStore = new KBstorage();
+console.log(KBStore);
+
+export function ExpressionInCache(expr) {
+    return KBStore.ExpressionInCache(expr);
+}
+
+export async function ParseExpression(expr) {
+    return await KBStore.ParseExpression(expr);
+}
+
+
+export async function GetData(expr) {
+    return await KBStore.GetData(expr);
+};
 
 export async function loadBlock(manifest) {
     const wasm_response = await fetch('/raw/' + manifest['wasm_id']);
