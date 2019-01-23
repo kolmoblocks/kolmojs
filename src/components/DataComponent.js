@@ -2,8 +2,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import DataNode from './DataNode';
-import KBstorage from '../proto/BrowserScript/KBstorage';
-const KBStore = new KBstorage();
+import { GetData, ParseExpression } from '../store.js';
 
 const DataTreeWrapper = styled.div`
     ${props => props.dataTreeStyle}
@@ -25,9 +24,8 @@ export default class DataComponent extends Component {
         // cycles? don't worry bout that yet
         // this is only when expr == this.props.root.expr
         try {
-            let expr = await KBStore.ParseExpression( "{ \"cid\" : \"" + cid + "\" }");
-            console.log(expr);
-            let content = await KBStore.GetData(expr);
+            let data_exp = await ParseExpression( "{ \"cid\" : \"" + cid + "\" }");
+            let content = await GetData(data_exp['data_expressions'][1]);
             this.setState({rendered: content})
         }
         catch (error) {
