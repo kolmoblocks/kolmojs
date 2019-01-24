@@ -100,11 +100,13 @@ export async function GetDataExpressionByCID(cid) {
     else if (cid == "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E") {
         return lib['banana'];
     }
-    else if (cid == "wasm_concat") {
+    else if (cid == "_wasm_concat_") {
+        console.log(lib['wasm_concat']);
         return lib['wasm_concat'];
     }
     else {
         console.log("I'm not handling this one :/");
+        console.log(cid);
     }
 }
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { GenerateData, GetDataExpressionByCID } from '../store.js';
-import {MdCloudDownload, MdCloudDone} from 'react-icons/md'; // possible failure in either
+import {MdCloudDownload, MdCloudDone, MdPlayArrow} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 
 const FitToParent = styled.div`
@@ -38,6 +38,13 @@ export default class DataExpr extends Component {
             <div className="card mt-3">
                 <div className="card-header">
                     <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
+                    <a className="mt-2 mr-2" href="">
+                        <MdCloudDownload/>
+                    </a>
+                    <a className="ml-2" href="">
+                        <MdPlayArrow/>
+                    </a>
+
                 </div>
                 <div className="card-body">
                     <ul className="list-group list-group-flush">

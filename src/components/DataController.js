@@ -53,27 +53,34 @@ export default class DataController extends Component {
         }
     }
 
-    onChangeCurExpr(expr) {
+    async onChangeCurExpr(cid) {
         // add to data stack
-        // change cur data expr
+        // change cur data expr index
+        let newExpr = await GetDataExpressionByCID(cid);
+        this.setState({
+            dataExprStack: this.state.dataExprStack.concat([newExpr]),
+            curIndex : this.state.curIndex + 1}
+        );
+        
     }
 
     onClickBack() {
-        // check if is at root
-        // if not
-        // pop from data stack, change data component, change cur expr
-
+        // decrement current index
+       if (this.state.curIndex > 0) {
+           this.setState({curIndex : this.state.curIndex - 1})
+       }
     }
 
     render() {
         let curExpr = this.getCurExpr();
         let rootExpr = this.getRootExpr();
+        console.log(curExpr);
         return (
             <div id="dataController" className="card">
                 <div className="card-header">
                     <div className="nav nav-pills card-header-pills">
                         <li className="nav-item">
-                            <a className={curExpr==rootExpr? "nav-link disabled" : "nav-link"} href="/#" 
+                            <a className={curExpr==rootExpr? "nav-link disabled" : "nav-link"} href="#" 
                                 aria-disabled={curExpr ==  rootExpr ? "true" : "false"} onClick={() => this.onClickBack()}>
                                 Back
                             </a>
