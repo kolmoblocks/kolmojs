@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { GenerateData, GetDataExpressionByCID } from '../store.js';
-import {MdCloudDownload, MdCloudDone, MdLayersClear} from 'react-icons/md'; // possible failure in either
+import { GenerateData, GetDataExpressionByCID, ExpressionInCache } from '../store.js';
+import {MdCloudDownload, MdCloudDone, MdLayersClear, MdCheck} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 import DataView from './DataView';
 
@@ -87,12 +87,12 @@ export default class DataController extends Component {
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">
-                                <MdCloudDownload/>
+                                {ExpressionInCache(curExpr) ? <MdCloudDone/> : <MdCloudDownload/>}
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#" onClick={() => this.flushDataExprs()}>
-                                <MdLayersClear/>
+                                { this.state.curIndex == this.state.dataExprStack.length -1 ? <MdCheck/> : <MdLayersClear/>}
                             </a>
                         </li>
                         <li className="nav-link" style={constrainWidth}>
