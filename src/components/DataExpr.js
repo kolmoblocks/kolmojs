@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Execute } from '../store.js';
+import { ExpressionInCache, GetAndCacheExpr } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdPlayArrow} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 
@@ -33,16 +33,10 @@ export default class DataExpr extends Component {
         this.state = {
             executionRes : null,
             oldExpr: props.dataExpr,
-            deps: []
         }
         
-        this.handleDecoding = this.handleDecoding.bind(this);
-        this.onExecuteExpr = this.onExecuteExpr.bind(this);
-    }
-
-    handleDecoding(result) {
-        // decode the result into readable format
-        return result;
+        this.onSelectExpr = this.onSelectExpr.bind(this);
+        this.allDepsInCache = this.allDepsInCache.bind(this);
     }
 
     componentDidUpdate() {
@@ -53,22 +47,48 @@ export default class DataExpr extends Component {
         }
     }
 
-    async onExecuteExpr(dataExpr) {
+    allDepsInCache() {
+        let type = Object.keys(this.props.dataExpr)[0];
+        Object.keys(Object.keys(this.props.dataExpr[type])).forEach(
+            function(key, index) {
+                let obj = this.props.dataExpr[type][key];
+                console.log(obj);
+                if (! ExpressionInCache(obj)) {
+                    return false;
+                }
+            }
+        )
+        return true;
+    }
+
+    async cacheExpression(expr) {
+        await GetAndCacheExpr(expr);
+        this.render();
+    }
+
+    async onSelectExpr(dataExpr) {
         // when and expression is executed, call the api and set the new state
-        let result = await Execute(dataExpr);
-        result = this.handleDecoding(result);
-        this.setState({executionRes : result});
-        
+        let response = {};
+        if (this.allDepsInCache()) {
+            response['content'] = await this.props.onExecuteExpr(dataExpr);
+            response['status'] = 'success';
+        }
+        else {
+            response['status'] = 'error';
+            response['content'] = 'Dependencies must all be in cache!'
+        }
+        this.setState({executionRes : response});
     }
 
     render() {
         let { dataExpr, onChangeCurExpr } = this.props;
         let type = Object.keys(dataExpr)[0];
+        
         return (
             <div className="card mt-3">
                 <div className="card-header">
                     <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
-                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onExecuteExpr(dataExpr)}>
+                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onSelectExpr(dataExpr)}>
                         <MdPlayArrow/>
                     </a>
 
@@ -80,8 +100,8 @@ export default class DataExpr extends Component {
                                 <li className="list-group-item">
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
-                                    <a className="ml-2" href="#" style={floatRight}>
-                                        <MdCloudDownload/>
+                                    <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[type][key])}>
+                                        {ExpressionInCache(dataExpr[type][key]).toString()}
                                     </a>
                                     <a href="#" onClick={() => onChangeCurExpr(dataExpr[type][key]['cid'])} style={floatRight}>
                                         <FitToParent>

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { GetDataExpressionByCID, ExpressionInCache } from '../store.js';
+import { GetDataExpressionByCID, ExpressionInCache, Execute } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdLayersClear, MdCheck} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 import DataView from './DataView';
@@ -24,7 +24,8 @@ export default class DataController extends Component {
         // set default state and expression stack
         this.state = {
             curIndex: 0,
-            dataExprStack: []
+            dataExprStack: [],
+            cached: null
         }
         
         this.state.dataExprStack.push(props.rootExpr);
@@ -33,6 +34,7 @@ export default class DataController extends Component {
         this.onClickBack = this.onClickBack.bind(this);
         this.getRootExpr = this.getRootExpr.bind(this);
         this.flushDataExprs = this.flushDataExprs.bind(this);
+        this.onExecuteExpr = this.onExecuteExpr.bind(this);
     }
 
     getRootExpr() {
@@ -50,9 +52,11 @@ export default class DataController extends Component {
         }
         let newStack = [...this.state.dataExprStack];
         newStack.splice(this.state.curIndex+1)
-        console.log(newStack);
         this.setState({dataExprStack : newStack});
+        
     }
+
+    
 
     async onChangeCurExpr(cid) {
         // add to data stack
@@ -70,6 +74,11 @@ export default class DataController extends Component {
        if (this.state.curIndex > 0) {
            this.setState({curIndex : this.state.curIndex - 1})
        }
+    }
+
+    onExecuteExpr(expr) {
+        let executed = Execute(expr);
+        this.setState({cached : executed});
     }
 
     render() {
@@ -102,7 +111,18 @@ export default class DataController extends Component {
                         </li>
                     </div>
                 </div>
-                <DataView onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
+                {this.state.cached ? 
+                    <div class="card-body">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-text">
+                                    {}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                : "" }
+                <DataView onExecExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
             </div>
         );
     }
