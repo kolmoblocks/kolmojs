@@ -78,8 +78,6 @@ export default class DataController extends Component {
         console.log(curExpr);
         return (
             <div id="dataController" className="card">
-                {this.state.curIndex}
-                {this.state.dataExprStack.length}
                 <div className="card-header">
                     <div className="nav nav-pills card-header-pills">
                         <li className="nav-item">
