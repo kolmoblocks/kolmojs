@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { GenerateData, GetDataExpressionByCID } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdLayersClear} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
+import DataView from './DataView';
 
 const FitToParent = styled.div`
     display: block;
@@ -28,7 +29,7 @@ export default class DataController extends Component {
         
         this.state.dataExprStack.push(props.rootExpr);
 
-        this.onSelectDataExpr = this.onSelectDataExpr.bind(this);
+        this.onChangeCurExpr = this.onChangeCurExpr.bind(this);
         this.onClickBack = this.onClickBack.bind(this);
         this.getRootExpr = this.getRootExpr.bind(this);
         this.flushDataExprs = this.flushDataExprs.bind(this);
@@ -43,6 +44,7 @@ export default class DataController extends Component {
     }
 
     flushDataExprs() {
+        // clears stack above current element selected
         if (this.state.dataExprStack.length >= this.state.curIndex) {
             throw "Something went wrong. curIndex is out of range.";
         }
@@ -51,7 +53,7 @@ export default class DataController extends Component {
         }
     }
 
-    async onSelectDataExpr(expr) {
+    onChangeCurExpr(expr) {
         // add to data stack
         // change cur data expr
     }
@@ -93,9 +95,7 @@ export default class DataController extends Component {
                         </li>
                     </div>
                 </div>
-                <div className="card-body">
-                    {JSON.stringify(curExpr)}
-                </div>
+                <DataView onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
             </div>
         );
     }
