@@ -56,6 +56,7 @@ export default class DataExpr extends Component {
         let result = await Execute(dataExpr);
         result = this.handleDecoding(result);
         this.setState({executionRes : result});
+        
     }
 
     render() {
@@ -86,7 +87,8 @@ export default class DataExpr extends Component {
                                         </FitToParent>
                                     </a>
                                 </li>
-                            ))}
+                            ))
+                        }
                     </ul>
                 </div>
                 {this.state.executionRes? 

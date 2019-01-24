@@ -101,7 +101,6 @@ export async function GetDataExpressionByCID(cid) {
         return lib['banana'];
     }
     else if (cid == "_wasm_concat_") {
-        console.log(lib['wasm_concat']);
         return lib['wasm_concat'];
     }
     else {
@@ -111,25 +110,28 @@ export async function GetDataExpressionByCID(cid) {
 }
 
 export async function GenerateData(expr) {
-    if (expr == lib['hellobanana']['data_expressions'][0] ||
-        expr == lib['hellobanana']['data_expressions'][1]) {
+    if (expr == lib['hellobanana']) {
+        console.log("here!");
         return "hellobanana";
     }
-    else if (expr == lib['hello']['data_expressions'][0]) {
+    else if (expr == lib['hello']) {
         return "hello";
     }
-    else if (expr == lib['banana']['data_expressions'][0]){
+    else if (expr == lib['banana']){
         return "banana";
     }
 };
 
 export async function Execute(expr) {
-    if (expr == lib['hellobanana']['data_expressions'][0] || expr == lib['hellobanana']['data_expressions'][1]) {
-        return "hellobanana"
+    console.log(expr);
+    console.log(lib['hellobanana']['data_expressions'][0]);
+    if (JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][0]) || JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][1])) {
+        return "hellobanana";
     }
     else if (expr == lib['hello']['data_expressions'][0]) return "hello";
     else if (expr == lib['banana']['data_expressions'][0]) return "banana";
     else if (expr == lib['wasm_concat']['data_expressions'][0]) return "___WASM_FILE___";
+    console.log("something went wrong");
 }
 
 export async function lookupBlock(dum) {

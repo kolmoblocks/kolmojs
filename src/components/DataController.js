@@ -75,7 +75,6 @@ export default class DataController extends Component {
     render() {
         let curExpr = this.getCurExpr();
         let rootExpr = this.getRootExpr();
-        console.log(curExpr);
         return (
             <div id="dataController" className="card">
                 <div className="card-header">
@@ -87,7 +86,7 @@ export default class DataController extends Component {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="">
+                            <a className="nav-link" href="#">
                                 <MdCloudDownload/>
                             </a>
                         </li>

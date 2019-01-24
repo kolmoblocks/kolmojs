@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import DataExpr from './DataExpr';
 import PropTypes from 'prop-types';
-import { GenerateData, GetDataExpressionByCID } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdLayersClear} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 
