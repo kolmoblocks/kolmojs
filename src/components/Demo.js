@@ -41,15 +41,7 @@ class Demo extends Component {
 
   render() {
     return (
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-6">
-            <DataController rootExpr={this.state.rootExpr} >
-            </DataController>
-          </div>
-        </div>
-
-      </div>
+        <DataController rootExpr={this.state.rootExpr} />
     );
   }
 }

@@ -75,7 +75,7 @@
     "visualization",
     "protocols"
   ],
-  "author": "Peter Borzov",
+  "author": "Dmitry Borzov",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kolmoblocks/kolmojs/issues"
