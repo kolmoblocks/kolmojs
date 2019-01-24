@@ -86,7 +86,7 @@ const lib = {
 };
 
 export function ExpressionInCache(expr) {
-    return true;
+    return KBStore.ExpressionInCache(expr);
 }
 
 export async function GetDataExpressionByCID(cid) {
