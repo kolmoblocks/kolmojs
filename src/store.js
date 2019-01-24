@@ -123,6 +123,7 @@ export async function GenerateData(expr) {
 };
 
 export async function Execute(expr) {
+    //return new Uint8Array(await KBStore.ExecExpression(expr));
     console.log(expr);
     console.log(lib['hellobanana']['data_expressions'][0]);
     if (JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][0]) || JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][1])) {

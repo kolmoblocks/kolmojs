@@ -32,8 +32,10 @@ export default class DataExpr extends Component {
         super(props);
         this.state = {
             executionRes : null,
-            oldExpr: props.dataExpr
+            oldExpr: props.dataExpr,
+            deps: []
         }
+        
         this.handleDecoding = this.handleDecoding.bind(this);
         this.onExecuteExpr = this.onExecuteExpr.bind(this);
     }
@@ -66,10 +68,7 @@ export default class DataExpr extends Component {
             <div className="card mt-3">
                 <div className="card-header">
                     <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
-                    <a className="mt-2 mr-2" href="#">
-                        <MdCloudDownload/>
-                    </a>
-                    <a className="ml-2" href="#" onClick={() => this.onExecuteExpr(dataExpr)}>
+                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onExecuteExpr(dataExpr)}>
                         <MdPlayArrow/>
                     </a>
 
@@ -81,11 +80,15 @@ export default class DataExpr extends Component {
                                 <li className="list-group-item">
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
+                                    <a className="ml-2" href="#" style={floatRight}>
+                                        <MdCloudDownload/>
+                                    </a>
                                     <a href="#" onClick={() => onChangeCurExpr(dataExpr[type][key]['cid'])} style={floatRight}>
                                         <FitToParent>
                                             {dataExpr[type][key]['cid']}
                                         </FitToParent>
                                     </a>
+                                    
                                 </li>
                             ))
                         }

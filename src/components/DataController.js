@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { GenerateData, GetDataExpressionByCID, ExpressionInCache } from '../store.js';
+import { GetDataExpressionByCID, ExpressionInCache } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdLayersClear, MdCheck} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 import DataView from './DataView';

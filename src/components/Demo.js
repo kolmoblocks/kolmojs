@@ -43,7 +43,7 @@ class Demo extends Component {
     return (
       <div className="container-fluid">
         <div className="row">
-          <div className="col-4">
+          <div className="col-6">
             <DataController rootExpr={this.state.rootExpr} >
             </DataController>
           </div>
