@@ -100,13 +100,10 @@ const lib = {
 };
 
 export function ExpressionInCache(expr) {
-    console.log(expr);
-    console.log(cacheProxy);
     if (expr.hasOwnProperty('ref')) {
         return cacheProxy.byRef[expr['ref']].cached;
     }
     else if (expr.hasOwnProperty('cid')) {
-        console.log(cacheProxy.byCid[expr['cid']].cached);
         return cacheProxy.byCid[expr['cid']].cached;
     }
     else if (expr.hasOwnProperty('cids')) {
@@ -168,8 +165,6 @@ export async function GenerateData(expr) {
 
 export function Execute(expr) {
     //return new Uint8Array(await KBStore.ExecExpression(expr));
-    console.log(expr);
-
     if (JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][0]) || JSON.stringify(expr) === JSON.stringify(lib['hellobanana']['data_expressions'][1])) {
         return "hellobanana";
     }

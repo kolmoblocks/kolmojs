@@ -48,17 +48,16 @@ export default class DataExpr extends Component {
 
     allDepsInCache() {
         let type = Object.keys(this.props.dataExpr)[0];
+        let stat = true;
         Object.keys(this.props.dataExpr[type]).forEach(
             (key, index) => {
                 let obj = JSON.parse(JSON.stringify(this.props.dataExpr[type][key]));
-                if (! ExpressionInCache(obj)) {
-                    return false;
-                }else {
-                    console.log(obj);
+                if (!ExpressionInCache(obj)) {
+                    stat = false;
                 }
             }
         )
-        return true;
+        return stat;
     }
 
     async cacheExpression(expr) {
