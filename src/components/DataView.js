@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import DataExpr from './DataExpr';
 import PropTypes from 'prop-types';
 import { GenerateData, GetDataExpressionByCID } from '../store.js';
 import {MdCloudDownload, MdCloudDone, MdLayersClear} from 'react-icons/md'; // possible failure in either
@@ -24,7 +25,7 @@ export default class DataView extends Component {
     }
 
     render() {
-        let { expr } = this.props;
+        let { expr, onChangeCurExpr } = this.props;
         return (
             <div className="card-body">
                 <ul className="list-group list-group-flush">
@@ -35,9 +36,12 @@ export default class DataView extends Component {
                                 <div style={floatCenter}>=</div>
                                 <div style={floatRight}>{expr[key]}</div>
                             </li>
-                    ))}
-                    
+                        )
+                    )}
                 </ul>
+                {expr['data_expressions'].map((dataExpr) => (
+                    <DataExpr dataExpr={dataExpr} onChangeCurExpr={onChangeCurExpr} />
+                ))}
             </div>
         );
     }    
