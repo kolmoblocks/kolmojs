@@ -123,6 +123,15 @@ export async function GenerateData(expr) {
     }
 };
 
+export async function Execute(expr) {
+    if (expr == lib['hellobanana']['data_expressions'][0] || expr == lib['hellobanana']['data_expressions'][1]) {
+        return "hellobanana"
+    }
+    else if (expr == lib['hello']['data_expressions'][0]) return "hello";
+    else if (expr == lib['banana']['data_expressions'][0]) return "banana";
+    else if (expr == lib['wasm_concat']['data_expressions'][0]) return "___WASM_FILE___";
+}
+
 export async function lookupBlock(dum) {
     return null;
 }

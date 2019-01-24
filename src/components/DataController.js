@@ -45,12 +45,13 @@ export default class DataController extends Component {
 
     flushDataExprs() {
         // clears stack above current element selected
-        if (this.state.dataExprStack.length >= this.state.curIndex) {
+        if (this.state.dataExprStack.length <= this.state.curIndex) {
             throw "Something went wrong. curIndex is out of range.";
         }
-        for (let i = this.state.dataExprStack.length; i >= this.state.curIndex; ++i) {
-            this.state.dataExprStack.pop();
-        }
+        let newStack = [...this.state.dataExprStack];
+        newStack.splice(this.state.curIndex+1)
+        console.log(newStack);
+        this.setState({dataExprStack : newStack});
     }
 
     async onChangeCurExpr(cid) {
@@ -77,6 +78,8 @@ export default class DataController extends Component {
         console.log(curExpr);
         return (
             <div id="dataController" className="card">
+                {this.state.curIndex}
+                {this.state.dataExprStack.length}
                 <div className="card-header">
                     <div className="nav nav-pills card-header-pills">
                         <li className="nav-item">
@@ -91,7 +94,7 @@ export default class DataController extends Component {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="">
+                            <a className="nav-link" href="#" onClick={() => this.flushDataExprs()}>
                                 <MdLayersClear/>
                             </a>
                         </li>
