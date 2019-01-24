@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import DataNode from './DataNode';
-import { GetData, ParseExpression } from '../store.js';
+import { GenerateData, GetDataExpressionByCID } from '../store.js';
 
 const DataTreeWrapper = styled.div`
     ${props => props.dataTreeStyle}
@@ -24,8 +24,9 @@ export default class DataComponent extends Component {
         // cycles? don't worry bout that yet
         // this is only when expr == this.props.root.expr
         try {
-            let data_exp = await ParseExpression( "{ \"cid\" : \"" + cid + "\" }");
-            let content = await GetData(data_exp['data_expressions'][1]);
+            let data_exp = await GetDataExpressionByCID( cid);
+            console.log(data_exp);
+            let content = await GenerateData(data_exp['data_expressions'][0]);
             this.setState({rendered: content})
         }
         catch (error) {

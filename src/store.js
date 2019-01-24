@@ -1,80 +1,134 @@
 import KBstorage from './proto/BrowserScript/KBstorage';
 
 const KBStore = new KBstorage();
-console.log(KBStore);
+const lib = {
+    "hellobanana" : {
+
+        "MIME" 		: "utf8/text",
+		"size" 		: 11,
+
+        "cids" : {
+            "SHA256" : "7E1D8D6609499A1A5FB67C6B9E7DD34CF7C6C4355259115FC7161F47266F5F3C"
+        },
+
+        "data_expressions" : [
+        {
+            "exec" : {
+                "wasm" : {
+                    "cid" : "_wasm_concat_"
+                },
+                "arg1" : {
+                    "cid" : "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+                },
+                "arg2" : {
+                    "cid" : "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E"
+                }
+            }
+        },
+        {
+            "seq" : {
+                "block1" : {
+                    "cid" : "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+                },
+                "block2" : {
+                    "cid" : "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E"
+                }
+            }
+        }]
+
+    },
+
+    "hello" : {
+
+        "MIME" 		: "utf8/text",
+		"size" 		: 5,
+
+        "cids" : {
+            "SHA256" : "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+        },
+
+        "data_expressions" : [{
+            "ref" : "file1.txt"
+        }]
+
+    },
+
+    "banana" : {
+
+        "MIME" 		: "utf8/text",
+		"size" 		: 6,
+
+        "cids" : {
+            "SHA256" : "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E"
+        },
+
+        "data_expressions" : [{
+            "ref" : "file2.txt"
+        }]
+
+    },
+
+    "wasm_concat" : {
+
+        "MIME" 		: "wasm",
+        "size" 		: 10251,
+        
+        "cids" : {
+            "SHA256" : "_wasm_concat_"
+        },
+
+        "data_expressions" : [{
+            "ref" : "buffers_concat.wasm"
+        }]
+
+    }
+
+};
 
 export function ExpressionInCache(expr) {
-    return KBStore.ExpressionInCache(expr);
+    return true;
 }
 
-export async function ParseExpression(expr) {
-    return await KBStore.ParseExpression(expr);
-}
-
-
-export async function GetData(expr) {
-    return await KBStore.GetData(expr);
-};
-
-export async function loadBlock(manifest) {
-    const wasm_response = await fetch('/raw/' + manifest['wasm_id']);
-    const buffer = await wasm_response.arrayBuffer();
-
-    const huffmanTableResponse = await fetch('/raw/' + manifest["encoding_table_id"]);
-    const huffmanTableRaw = await huffmanTableResponse.arrayBuffer();
-    const huffmanTable = new Uint8Array(huffmanTableRaw, 0, huffmanTableRaw.byteLength);
-    console.log("serialized huffman-table size:", huffmanTableRaw.byteLength);
-
-    const datablockResponse = await fetch('/raw/' + manifest["encoded_data"]);
-    const datablockRaw = await datablockResponse.arrayBuffer();
-    const datablock = new Uint8Array(datablockRaw, 0, datablockRaw.byteLength);
-    console.log("serialized encoded data size:", datablockRaw.byteLength);
-
-    const module = await WebAssembly.compile(buffer);
-    const instance = await WebAssembly.instantiate(module, {env:{
-        consoleLog: num => console.log("value is: ", num),
-        consoleLevelLog: num => console.log("level is:", num),
-        consoleRightmostLog: num => console.log("rightmost is:", num),
-    }});
-
-    var mm = instance.exports;
-    const huffmanOffset = mm.getHuffmanOffset();
-    const strBuf = new Uint8Array(mm.memory.buffer, huffmanOffset, huffmanTable.length);
-    for (let i=0; i < huffmanTable.length; i++) {
-      strBuf[i] = huffmanTable[i];
+export async function GetDataExpressionByCID(cid) {
+    //return await KBStore.GetDataExpressionByCID(cid);
+    if (cid == "7E1D8D6609499A1A5FB67C6B9E7DD34CF7C6C4355259115FC7161F47266F5F3C") {
+        return lib['hellobanana'];
     }
-    const encodedDataOffset = mm.get_encoded_data_offset();
-    console.log("the size of the encoded data is:", datablock.byteLength);
-    console.log("the offset for encoded data is:", encodedDataOffset);
-    mm.set_encoded_data_size(datablock.byteLength);
-    const encodedDataBuf = new Uint8Array(mm.memory.buffer, encodedDataOffset, datablock.byteLength);
-    for (let i=0; i < datablock.byteLength; i++) {
-      encodedDataBuf[i] = datablock[i];
-	}
-	mm.decodeHuffman();
-
-	const memory = mm.memory;
-	const offset = mm.get_decoded_data_offset();
-	const size = mm.get_decoded_data_size();
-  
-  
-	const outBuf = new Uint8Array(memory.buffer, offset, size);
-    return outBuf;
+    else if (cid == "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824") {
+        return lib['hello'];
+    }
+    else if (cid == "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E") {
+        return lib['banana'];
+    }
+    else if (cid == "wasm_concat") {
+        return lib['wasm_concat'];
+    }
+    else {
+        console.log("I'm not handling this one :/");
+    }
 }
 
-
-export async function lookupBlock(cid='') {
-    let theUrl = (cid===''? '/search' : '/search?cid=');
-
-    return Promise.all([
-        fetch('http://'+window.location.host+theUrl, {
-            headers: {
-                'Content-Type':'application/json',
-                'Accept': 'application/json'
-            }
-        }).then((response)=>response.json())// response format is fucked up - fix it!
-    ]);
+export async function GenerateData(expr) {
+    if (expr == lib['hellobanana']['data_expressions'][0] ||
+        expr == lib['hellobanana']['data_expressions'][1]) {
+        return "hellobanana";
+    }
+    else if (expr == lib['hello']['data_expressions'][0]) {
+        return "hello";
+    }
+    else if (expr == lib['banana']['data_expressions'][0]){
+        return "banana";
+    }
 };
+
+export async function lookupBlock(dum) {
+    return null;
+}
+
+export async function loadBlock(dum) {
+    return null;
+}
+
 
 // export function renderBlock(cid, kb, target) {
 //     var manifest = this.blocks[cid]['kolmoblocks'][kb];

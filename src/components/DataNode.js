@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {MdCloudDownload, MdCloudDone} from 'react-icons/md'; // possible failure in either
 import {IoMdRemove, IoMdAdd} from 'react-icons/io'
 import PropTypes from 'prop-types';
-import { ExpressionInCache, ParseExpression } from '../store.js';
+import { ExpressionInCache,GetDataExpressionByCID } from '../store.js';
 
     
 const StyledDataNode = styled.div`
@@ -67,7 +67,7 @@ class DataNode extends Component {
         else {
             if (!this.state.alreadyLoaded) {
                 try {
-                    let myExpr = await ParseExpression( "{ \"cid\" : \"" + cid + "\" }");
+                    let myExpr = await GetDataExpressionByCID(cid);
                     let myRefs = [];
 
                     myExpr['data_expressions'].forEach(function(val, key){

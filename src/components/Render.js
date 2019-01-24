@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import Tree from './Tree';
 import File from './File'
 import {loadBlock, lookupBlock} from './../store';
 
@@ -41,7 +40,6 @@ export default class Render extends Component {
       <div className="row">
         <div className="col-12 col-md-5" >
           <TreeWrapper>
-            < Tree onSelect={this.onSelect} />
           </TreeWrapper>
         </div>
         <div className="col-12 col-md-7">
