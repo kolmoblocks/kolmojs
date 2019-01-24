@@ -51,9 +51,10 @@ export default class DataExpr extends Component {
         Object.keys(this.props.dataExpr[type]).forEach(
             (key, index) => {
                 let obj = JSON.parse(JSON.stringify(this.props.dataExpr[type][key]));
-                console.log(obj);
                 if (! ExpressionInCache(obj)) {
                     return false;
+                }else {
+                    console.log(obj);
                 }
             }
         )

@@ -112,15 +112,13 @@ export default class DataController extends Component {
                     </div>
                 </div>
                 {this.state.cached ? 
-                    <div class="card-body">
-                        <div class="card">
+                        <div class="card mt-3 ml-3 mr-3">
                             <div class="card-body">
                                 <div class="card-text">
-                                    {}
+                                    {this.state.cached}
                                 </div>
                             </div>
                         </div>
-                    </div>
                 : "" }
                 <DataView onExecuteExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
             </div>
