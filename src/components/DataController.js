@@ -122,7 +122,7 @@ export default class DataController extends Component {
                         </div>
                     </div>
                 : "" }
-                <DataView onExecExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
+                <DataView onExecuteExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
             </div>
         );
     }

@@ -34,7 +34,6 @@ export default class DataExpr extends Component {
             executionRes : null,
             oldExpr: props.dataExpr,
         }
-        
         this.onSelectExpr = this.onSelectExpr.bind(this);
         this.allDepsInCache = this.allDepsInCache.bind(this);
     }
@@ -49,9 +48,9 @@ export default class DataExpr extends Component {
 
     allDepsInCache() {
         let type = Object.keys(this.props.dataExpr)[0];
-        Object.keys(Object.keys(this.props.dataExpr[type])).forEach(
-            function(key, index) {
-                let obj = this.props.dataExpr[type][key];
+        Object.keys(this.props.dataExpr[type]).forEach(
+            (key, index) => {
+                let obj = JSON.parse(JSON.stringify(this.props.dataExpr[type][key]));
                 console.log(obj);
                 if (! ExpressionInCache(obj)) {
                     return false;
@@ -63,20 +62,22 @@ export default class DataExpr extends Component {
 
     async cacheExpression(expr) {
         await GetAndCacheExpr(expr);
-        this.render();
+        this.forceUpdate();
     }
 
     async onSelectExpr(dataExpr) {
         // when and expression is executed, call the api and set the new state
         let response = {};
         if (this.allDepsInCache()) {
-            response['content'] = await this.props.onExecuteExpr(dataExpr);
+            await this.props.onExecuteExpr(dataExpr);
+            response['content'] = 'Successfully executed expression!'
             response['status'] = 'success';
         }
         else {
-            response['status'] = 'error';
+            response['status'] = 'danger';
             response['content'] = 'Dependencies must all be in cache!'
         }
+        console.log("here!", response);
         this.setState({executionRes : response});
     }
 
@@ -101,7 +102,7 @@ export default class DataExpr extends Component {
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
                                     <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[type][key])}>
-                                        {ExpressionInCache(dataExpr[type][key]).toString()}
+                                        {ExpressionInCache(dataExpr[type][key]) ? <MdCloudDone/> : <MdCloudDownload/>}
                                     </a>
                                     <a href="#" onClick={() => onChangeCurExpr(dataExpr[type][key]['cid'])} style={floatRight}>
                                         <FitToParent>
@@ -115,11 +116,9 @@ export default class DataExpr extends Component {
                     </ul>
                 </div>
                 {this.state.executionRes? 
-                <div className="card-footer">
-                    <div class="card">
-                        <div class="card-body">
-                            {this.state.executionRes}
-                        </div>
+                <div className={"card-footer bg-"+this.state.executionRes.status}>
+                    <div className={"card-text text-light"}>
+                        {this.state.executionRes.content}
                     </div>
                 </div>
                 : ""}

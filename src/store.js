@@ -112,6 +112,7 @@ export function ExpressionInCache(expr) {
     else if (expr.hasOwnProperty('cids')) {
         return cacheProxy.byCid[expr['cids']['SHA256']].cached;
     }
+    console.log("I'm not supposed to be here")
 }
 
 export async function GetAndCacheExpr(expr) {
