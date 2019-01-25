@@ -96,7 +96,15 @@ export default class DataController extends Component {
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">
-                                {ExpressionInCache(curExpr) ? <MdCloudDone/> : <MdCloudDownload/>}
+                                {  ExpressionInCache(curExpr) ? (
+                                    <span className="badge badge-success">
+                                        <MdCloudDone /> Data object retrieved
+                                    </span>
+                                 ) : (
+                                    <span className="badge badge-danger">
+                                       <MdCloudDownload/> Data object not retrieved
+                                    </span>
+                                 )}
                             </a>
                         </li>
                         <li className="nav-item">

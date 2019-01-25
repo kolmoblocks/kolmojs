@@ -21,7 +21,6 @@ class App extends Component {
               <ul class="list-group">
                 <Link to="/" class="list-group-item active">Cras justo odio</Link>
                 <Link to="/example2" class="list-group-item">Examplio 2</Link>
-                <li class="list-group-item">Dapibus ac facilisis in</li>
               </ul>
             </div>
 
