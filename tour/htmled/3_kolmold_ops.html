@@ -1,0 +1,33 @@
+<h1>kolmoLD syntax and message codes</h1>
+
+<p>data_obj</p>
+
+<pre><code>doi_expr := { doi: &lt;value&gt;, doi_scheme: &quot;SHA256&quot; }
+</code></pre>
+
+<pre><code>meta_info = {
+    doi_expr...,
+    attribute_expr...,
+    formulas...
+}
+</code></pre>
+
+<h1>Network protocol network protocol messages</h1>
+
+<h2>Tier 1</h2>
+
+<p><strong>search_network_for_raw(doi_expr) -&gt; [data_obj], outcome</strong> - given the doi_expr, search the network if the data is available in raw</p>
+
+<p><strong>search_network_for_meta_info(doi_expr) -&gt; [meta_info], outcome</strong> - given the doi_expr, search the network for meta information about the data object of interest. Meta information includes things like all the other doi_exprs, attributes and formulas.</p>
+
+<p><strong>is_retrieved_by_doi(doi_expr) -&gt; bool</strong> -looks up whether the current node has the data object identified by the doi cached locally</p>
+
+<p><strong>eval_formula(formula_expr) -&gt; [output_data], outcome</strong> - evaluate the formula. Will only execute if all the dependancies are in cache.</p>
+
+<p><strong>retrive_data_object_by_doi(doi_expr) -&gt; [data_obj_pointer | nil]</strong></p>
+
+<h2>Tier 2</h2>
+
+<p><strong>flush_retrieved_do_by_doi(doi_expr) -&gt; bool</strong></p>
+
+<p><strong>is_retrieved_by_formula(formula) -&gt; bool</strong> -looks up whether the current node has the data object identified by the formula</p>

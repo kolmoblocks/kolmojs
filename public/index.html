@@ -8,21 +8,10 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
-    <!--
-      manifest.json provides metadata used when your web app is added to the
-      homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+    
     <title>KolmoLD</title>
   </head>
   <body>
@@ -36,7 +25,7 @@
           <div class="container-fluid">
             <div class="row">
               <div class="col-2">
-                <!--- Navigation --> 
+                 
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link active" id="v-1hello-tab" data-toggle="pill" href="#v-1hello" role="tab" aria-controls="v-1hello" aria-selected="true">hello, kolmoLD</a>
                     <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Basics</a>
@@ -46,65 +35,97 @@
               <div class="col-6 text panel panel-default well">
                 <div class="tab-content" id="v-pills-tabContent">
                   <div class="tab-pane fade show active" id="v-1hello" role="tabpanel" aria-labelledby="v-1hello-tab">
-                      <h1 id="overview">Overview</h1>
-                      <p>KolmoLD is a network protocol that rethinks the tech stack behind the modern internet.</p>
-                      <p>The tech stack that powers the internet (IP, TCP, BGP) relies on the model where a internet resource runs on its own machine:</p>
-                      <pre><code>
-                      </code></pre>
-                      <p>Within that model, the internet resource and the network identity of the computer it runs on is interchangable. </p>
-                      <p>As the internet evolved, limitations of that approach became apparent. The industry moved towards distributed systems, where ainternetb resource is run on multiple machines.</p>
-                      <p>Such an approach is dictated by the following requirements:</p>
-                      <ol>
-                      <li>Scalability: a internet resource's workload does not fit in a single computer [1]  </li>
-                      <li>Edge hosting: performance engineering requires hostinginternetb resources as geographically close to the consumer as possible [2]</li>
-                      </ol>
-                      <p>The art of distributed web system is building a distributed system that behave as if it was fitting the single computer - singleinternetb resource pattern [1]. Multiple challenges and limitations in the domain stem from this limitation.</p>
-                      <p>At the core of KolmoLD is the concept of separation of concerns: separating the logic of internet resource and the network computers that execute it.</p>
-                      <p>References:</p>
-                      <ol>
-                      <li><a href="https://dataintensive.net/">"Designing Data-Intensive Applications"</a>, Martin Kleppman</li>
-                      <li><a href="https://hpbn.co/">"High Performance Browser Networking"</a>, Ilya Grigorik</li>
-                      </ol>
+                      <h1>Overview</h1>
+
+<p>KolmoLD is a network protocol that rethinks the tech stack behind the modern internet.</p>
+
+<p>The tech stack that powers the internet (IP, TCP, BGP) relies on the model where a internet resource runs on its own machine:</p>
+
+<pre><code>
+
+</code></pre>
+
+<p>Within that model, the internet resource and the network identity of the computer it runs on is interchangable.</p>
+
+<p>As the internet evolved, limitations of that approach became apparent. The industry moved towards distributed systems, where ainternetb resource is run on multiple machines.</p>
+
+<p>Such an approach is dictated by the following requirements:</p>
+
+<ol>
+<li>Scalability: a internet resource&rsquo;s workload does not fit in a single computer [1]<br>
+</li>
+<li>Edge hosting: performance engineering requires hostinginternetb resources as geographically close to the consumer as possible [2]</li>
+</ol>
+
+<p>The art of distributed web system is building a distributed system that behave as if it was fitting the single computer - singleinternetb resource pattern [1]. Multiple challenges and limitations in the domain stem from this limitation.</p>
+
+<p>At the core of KolmoLD is the concept of separation of concerns: separating the logic of internet resource and the network computers that execute it.</p>
+
+<p>References:</p>
+
+<ol>
+<li><a href="https://dataintensive.net/">&ldquo;Designing Data-Intensive Applications&rdquo;</a>, Martin Kleppman</li>
+<li><a href="https://hpbn.co/">&ldquo;High Performance Browser Networking&rdquo;</a>, Ilya Grigorik</li>
+</ol>
+
                   </div>
                   <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                      <h1 id="dataobjectsandhowtheyrelatetoeachother">Data objects and how they relate to each other</h1>
-                      <p>Computation can viewed as data objects being transfomed into other data objects. Here by a data object, we refer to arbitrary chunk of data. </p>
-                      <p>Data objects may contain data structures, assets.</p>
-                      <p>KolmoLD specifies a special kind of data objects that can contain arbitrary algorithms: kolmoblocks. The alogirthms are encoded in a  Webassembly-based bytecode format.</p>
-                      <pre><code>
-                      </code></pre>
-                      <p>Here we have four objects:</p>
-                      <ul>
-                      <li>"Hello" - </li>
-                      </ul>
+                     <h1>Data objects and how they relate to each other</h1>
+
+<p>Computation can viewed as data objects being transfomed into other data objects. Here by a data object, we refer to arbitrary chunk of data.</p>
+
+<p>Data objects may contain data structures, assets.</p>
+
+<p>KolmoLD specifies a special kind of data objects that can contain arbitrary algorithms: kolmoblocks. The alogirthms are encoded in a  Webassembly-based bytecode format.</p>
+
+<pre><code>
+</code></pre>
+
+<p>Here we have four objects:
+* &ldquo;Hello&rdquo; -</p>
+
                   </div>
                   <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-                      <h1 id="kolmoldsyntaxandmessagecodes">kolmoLD syntax and message codes</h1>
-                      <p>data_obj</p>
-                      <pre><code>doi_expr := { doi: &lt;value&gt;, doi_scheme: "SHA256" }
-                      </code></pre>
-                      <pre><code>meta_info = {
-                          doi_expr...,
-                          attribute_expr...,
-                          formulas...
-                      }
-                      </code></pre>
-                      <h1 id="networkprotocolnetworkprotocolmessages">Network protocol network protocol messages</h1>
-                      <h2 id="tier1">Tier 1</h2>
-                      <p><strong>search<em>network</em>for<em>raw(doi</em>expr) -> [data<em>obj], outcome</strong> - given the doi</em>expr, search the network if the data is available in raw </p>
-                      <p><strong>search<em>network</em>for<em>meta</em>info(doi<em>expr) -> [meta</em>info], outcome</strong> - given the doi<em>expr, search the network for meta information about the data object of interest. Meta information includes things like all the other doi</em>exprs, attributes and formulas.</p>
-                      <p><strong>is<em>retrieved</em>by<em>doi(doi</em>expr) -> bool</strong> -looks up whether the current node has the data object identified by the doi cached locally</p>
-                      <p><strong>eval<em>formula(formula</em>expr) -> [output_data], outcome</strong> - evaluate the formula. Will only execute if all the dependancies are in cache. </p>
-                      <p><strong>retrive<em>data</em>object<em>by</em>doi(doi<em>expr) -> [data</em>obj_pointer | nil]</strong></p>
-                      <h2 id="tier2">Tier 2</h2>
-                      <p><strong>flush<em>retrieved</em>do<em>by</em>doi(doi_expr) -> bool</strong></p>
-                      <p><strong>is<em>retrieved</em>by_formula(formula) -> bool</strong> -looks up whether the current node has the data object identified by the formula</p>
+                      <h1>kolmoLD syntax and message codes</h1>
+
+<p>data_obj</p>
+
+<pre><code>doi_expr := { doi: &lt;value&gt;, doi_scheme: &quot;SHA256&quot; }
+</code></pre>
+
+<pre><code>meta_info = {
+    doi_expr...,
+    attribute_expr...,
+    formulas...
+}
+</code></pre>
+
+<h1>Network protocol network protocol messages</h1>
+
+<h2>Tier 1</h2>
+
+<p><strong>search_network_for_raw(doi_expr) -&gt; [data_obj], outcome</strong> - given the doi_expr, search the network if the data is available in raw</p>
+
+<p><strong>search_network_for_meta_info(doi_expr) -&gt; [meta_info], outcome</strong> - given the doi_expr, search the network for meta information about the data object of interest. Meta information includes things like all the other doi_exprs, attributes and formulas.</p>
+
+<p><strong>is_retrieved_by_doi(doi_expr) -&gt; bool</strong> -looks up whether the current node has the data object identified by the doi cached locally</p>
+
+<p><strong>eval_formula(formula_expr) -&gt; [output_data], outcome</strong> - evaluate the formula. Will only execute if all the dependancies are in cache.</p>
+
+<p><strong>retrive_data_object_by_doi(doi_expr) -&gt; [data_obj_pointer | nil]</strong></p>
+
+<h2>Tier 2</h2>
+
+<p><strong>flush_retrieved_do_by_doi(doi_expr) -&gt; bool</strong></p>
+
+<p><strong>is_retrieved_by_formula(formula) -&gt; bool</strong> -looks up whether the current node has the data object identified by the formula</p>
+
                   </div>
                 </div>
               </div>
 
               <div class="col-4">
-                  <!--- KolmoLD viewer --> 
+                   
                   <div id="root"></div>
               </div>
             </div>
