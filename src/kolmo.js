@@ -21,7 +21,7 @@ class Remote {
         };
 
         try {
-            const resp = await fetch(this.raw + doi);
+            const resp = await fetch(this.raw + doi, {cors: "cors"});
             if (!resp.ok) {
                 opAct["status"] =  "request returns negative response";
                 opAct["resp"] =  resp;
@@ -38,4 +38,7 @@ class Remote {
         }
     }
 }
+
+
+let rr = new Remote("");
 
