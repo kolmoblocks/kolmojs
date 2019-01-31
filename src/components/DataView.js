@@ -18,10 +18,6 @@ const floatCenter = {
 }
 
 export default class DataView extends Component {
-    constructor(props) {
-        super(props);
-
-    }
 
     render() {
         let { expr, onChangeCurExpr } = this.props;
@@ -40,7 +36,7 @@ export default class DataView extends Component {
                 </ul>
                 {
                     expr['data_expressions'] ? 
-                        expr['data_expressions'].map((dataExpr) => (
+                        expr.data_expressions.map((dataExpr) => (
                             <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />
                         ))
                         : <div />

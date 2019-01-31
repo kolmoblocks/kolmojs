@@ -65,12 +65,24 @@ class Remote {
 
 class Cache {
     constructor() {
-        this.metaInfo = {};
+        this.metaInfo = {
+            "e5a6f707c19480993e600d1d765450660745e0ae5919a40f8a013fa8ebb538cd": {
+                    "MIME": "text/plain; charset=utf-8",
+                    "cids": {
+                        "SHA256": "e5a6f707c19480993e600d1d765450660745e0ae5919a40f8a013fa8ebb538cd"
+                    },
+                    "size": 9,
+                    "data_expressions": [{
+                        "type": "ref"
+                        }
+                    ]
+                }
+        };
         this.raw = {};
     }
 
     isCached(doi) {
-        return this.raw[doi] === undefined;
+        return this.raw[doi] != undefined;
     }
 
     clearCache(doi) {
@@ -85,8 +97,10 @@ class Kolmo {
     }
 
     async search4MetaInfo(doi) {
-        this.cache.metaInfo[doi] = {"cids": {
-                "SHA256": doi,
+        if (!this.cache.metaInfo[doi]) {
+            this.cache.metaInfo[doi] = {"cids": {
+                    "SHA256": doi,
+                }
             }
         }
         this.selected = this.cache.metaInfo[doi];

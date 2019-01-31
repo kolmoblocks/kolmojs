@@ -83,8 +83,11 @@ export default class DataExpr extends Component {
 
     render() {
         let { dataExpr, onChangeCurExpr } = this.props;
-        let type = Object.keys(dataExpr)[0];
-        
+        let type = dataExpr["type"];
+        let doKeys = Object.keys(dataExpr).filter(function(key) {
+            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cids);
+        });
+
         return (
             <div className="card mt-3">
                 <div className="card-header">
@@ -96,20 +99,19 @@ export default class DataExpr extends Component {
                 </div>
                 <div className="card-body">
                     <ul className="list-group list-group-flush">
-                        {dataExpr['ref'] ? dataExpr['ref'] : 
-                            Object.keys(dataExpr[type]).map((key, index) => (
+                        { 
+                            doKeys.map((key) => (
                                 <li className="list-group-item">
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
-                                    <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[type][key])}>
-                                        {ExpressionInCache(dataExpr[type][key]) ? <MdCloudDone/> : <MdCloudDownload/>}
+                                    <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[key])}>
+                                        {ExpressionInCache(dataExpr[key]) ? <MdCloudDone/> : <MdCloudDownload/>}
                                     </a>
-                                    <a href="#" onClick={() => onChangeCurExpr(dataExpr[type][key]['cid'])} style={floatRight}>
+                                    <a href="#" onClick={() => onChangeCurExpr(dataExpr[key]['cid'])} style={floatRight}>
                                         <FitToParent>
-                                            {dataExpr[type][key]['cid']}
+                                            {dataExpr[key]['cid']}
                                         </FitToParent>
                                     </a>
-                                    
                                 </li>
                             ))
                         }
