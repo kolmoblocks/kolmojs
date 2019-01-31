@@ -37,8 +37,66 @@ class Remote {
             return opAct;
         }
     }
+
+    async search4MetaInfo(doi) {
+        let opAct = {
+            opAct: "search4MetaInfo",
+            args: [doi],
+        };
+
+        try {
+            const resp = await fetch(this.search + doi, {cors: "cors"});
+            if (!resp.ok) {
+                opAct["status"] =  "request returns negative response";
+                opAct["resp"] =  resp;
+                return opAct;
+            }
+            const json = await resp.json();
+            opAct["status"] = "ok";
+            opAct["metaInfo"] = json;
+            return opAct;
+        } catch(err) {
+            opAct["status"] = "failed to send request";
+            opAct["err"] = err;
+            return opAct;
+        }
+    }
 }
 
+class Cache {
+    constructor() {
+        this.metaInfo = {};
+        this.raw = {};
+    }
 
-let rr = new Remote("");
+    isCached(doi) {
+        return this.raw[doi] === undefined;
+    }
+
+    clearCache(doi) {
+        delete this.raw.doi;
+    }
+}
+
+class Kolmo {
+    constructor({cache, remote}) {
+        this.cache = cache;
+        this.remote = remote;
+    }
+
+    async search4MetaInfo(doi) {
+        let opAct = await this.remote.search4MetaInfo(doi);
+        if (opAct.status != "ok") {
+            return opAct;
+        }
+        doi = opAct.metaInfo.cids["SHA256"];
+        this.cache.metaInfo[doi] = opAct.metaInfo;
+        return opAct;
+    }
+}
+
+let kolmo = new Kolmo({
+    cache: new Cache(),
+    remote: new Remote(""), 
+});
 
