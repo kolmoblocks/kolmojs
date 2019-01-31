@@ -11,6 +11,7 @@
     
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="./kolmo.css" />
     
     <title>KolmoLD</title>
   </head>
@@ -27,14 +28,14 @@
               <div class="col-2">
                  
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link active" id="v-1hello-tab" data-toggle="pill" href="#v-1hello" role="tab" aria-controls="v-1hello" aria-selected="true">hello, kolmoLD</a>
-                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Basics</a>
+                    <a class="nav-link" id="v-1hello-tab" data-toggle="pill" href="#v-1hello" role="tab" aria-controls="v-1hello" aria-selected="false">hello, kolmoLD</a>
+                    <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Basics</a>
                     <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Message types</a>
                 </div>
               </div>
               <div class="col-6 text panel panel-default well">
                 <div class="tab-content" id="v-pills-tabContent">
-                  <div class="tab-pane fade show active" id="v-1hello" role="tabpanel" aria-labelledby="v-1hello-tab">
+                  <div class="tab-pane fade" id="v-1hello" role="tabpanel" aria-labelledby="v-1hello-tab">
                       <h1>Overview</h1>
 
 <p>KolmoLD is a network protocol that rethinks the tech stack behind the modern internet.</p>
@@ -69,7 +70,7 @@
 </ol>
 
                   </div>
-                  <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                  <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                      <h2>Data objects and how they relate to each other</h2>
 
 <p>Computation can viewed as data objects being transfomed into other data objects. Here by a data object, we refer to arbitrary chunk of data.</p>
