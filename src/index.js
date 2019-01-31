@@ -18,7 +18,16 @@ let kolmoController = <App kolmo={kolmo} />;
 let refcntl = ReactDOM.render(kolmoController, document.getElementById('root'));
 
 
-ReactDOM.render(<RunButton kolmo={kolmo} megaupdate={refcntl}  args="hello banana" />, document.getElementById('kolmorun-button'));
+
+var interactives = document.querySelectorAll("div.interactive-canvas");
+
+interactives.forEach(function(interactivePanel) {
+    var buttonElement =  interactivePanel.querySelector("span.button-placeholder");
+    var textEl =  interactivePanel.querySelector("pre").textContent;
+    var funcy = JSON.parse(textEl);
+    ReactDOM.render(<RunButton kolmo={kolmo} megaupdate={refcntl}  funcy={funcy} />, buttonElement);
+});
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA

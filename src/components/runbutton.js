@@ -9,8 +9,8 @@ class RunButton extends Component {
 
     actionClick() {
         var self = this;
-        this.props.kolmo.search4MetaInfo(this.props.args).then( function() {
-            self.forceUpdate();
+        let {kolmo, funcy } = this.props;
+        this.props.kolmo[funcy.opcode](funcy.doi).then( function() {
             self.props.megaupdate.forceUpdate();
         });
     }
