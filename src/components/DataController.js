@@ -82,21 +82,32 @@ export default class DataController extends Component {
     }
 
     render() {
-        let curExpr = this.getCurExpr();
+        if (!this.props.kolmo.selected) {
+            return (<div id="dataController" className="card">
+                <div className="card-header">
+                    Nothing selected
+                </div>
+            </div>)
+        }
+
+        let curExpr = this.props.kolmo.selected;
+        let doi = curExpr.cids.SHA256;
+        const cacheCheck = (doi) => this.props.kolmo.cache.isCached(doi);
+
         let rootExpr = this.getRootExpr();
         return (
             <div id="dataController" className="card">
                 <div className="card-header">
                     <div className="nav nav-pills card-header-pills">
                         <li className="nav-item">
-                            <a className={curExpr==rootExpr? "nav-link disabled" : "nav-link"} href="#" 
-                                aria-disabled={curExpr ==  rootExpr ? "true" : "false"} onClick={() => this.onClickBack()}>
+                            <a className={ true ? "nav-link disabled" : "nav-link"} href="#" 
+                                aria-disabled={ true ? "true" : "false"} onClick={() => this.onClickBack()}>
                                 Back
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">
-                                {  ExpressionInCache(curExpr) ? (
+                                {  cacheCheck(doi) ? (
                                     <span className="badge badge-success">
                                         <MdCloudDone /> Data object retrieved
                                     </span>
@@ -114,7 +125,7 @@ export default class DataController extends Component {
                         </li>
                         <li className="nav-link" style={constrainWidth}>
                             <FitToParent>
-                                {curExpr['cids']['SHA256']}
+                                { doi }
                             </FitToParent>
                         </li>
                     </div>

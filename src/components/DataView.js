@@ -38,9 +38,13 @@ export default class DataView extends Component {
                         )
                     )}
                 </ul>
-                {expr['data_expressions'].map((dataExpr) => (
-                    <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />
-                ))}
+                {
+                    expr['data_expressions'] ? 
+                        expr['data_expressions'].map((dataExpr) => (
+                            <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />
+                        ))
+                        : <div />
+                }
             </div>
         );
     }    

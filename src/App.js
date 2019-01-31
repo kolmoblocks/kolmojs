@@ -8,7 +8,7 @@ import Demo from "./components/Demo.js"
 
 class App extends Component {
   render() {
-    return <Demo/>;
+    return <Demo kolmo={this.props.kolmo} />;
   }
 }
 

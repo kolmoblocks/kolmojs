@@ -85,18 +85,25 @@ class Kolmo {
     }
 
     async search4MetaInfo(doi) {
+        this.cache.metaInfo[doi] = {"cids": {
+                "SHA256": doi,
+            }
+        }
+        this.selected = this.cache.metaInfo[doi];
         let opAct = await this.remote.search4MetaInfo(doi);
         if (opAct.status != "ok") {
             return opAct;
         }
-        doi = opAct.metaInfo.cids["SHA256"];
         this.cache.metaInfo[doi] = opAct.metaInfo;
         return opAct;
     }
 }
 
 let kolmo = new Kolmo({
-    cache: new Cache(),
-    remote: new Remote(""), 
+        cache: new Cache(),
+        remote: new Remote(""),
+        selected: undefined, 
 });
+
+export default kolmo;
 
