@@ -82,11 +82,11 @@ class Cache {
     }
 
     isCached(doi) {
-        return this.raw[doi] != undefined;
+        return this.raw[doi] !== undefined;
     }
 
     clearCache(doi) {
-        delete this.raw.doi;
+        delete this.raw[doi];
     }
 }
 

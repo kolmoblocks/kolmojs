@@ -34,7 +34,7 @@ export default class DataController extends Component {
         this.onChangeCurExpr = this.onChangeCurExpr.bind(this);
         this.onClickBack = this.onClickBack.bind(this);
         this.getRootExpr = this.getRootExpr.bind(this);
-        this.flushDataExprs = this.flushDataExprs.bind(this);
+        this.flushCache = this.flushCache.bind(this);
         this.onExecuteExpr = this.onExecuteExpr.bind(this);
     }
 
@@ -46,15 +46,10 @@ export default class DataController extends Component {
         return this.state.dataExprStack[this.state.curIndex];
     }
 
-    flushDataExprs() {
-        // clears stack above current element selected
-        if (this.state.dataExprStack.length <= this.state.curIndex) {
-            throw "Something went wrong. curIndex is out of range.";
-        }
-        let newStack = [...this.state.dataExprStack];
-        newStack.splice(this.state.curIndex+1)
-        this.setState({dataExprStack : newStack});
-        
+    async flushCache() {
+        let doi = this.props.kolmo.selected.cids.SHA256;
+        this.props.kolmo.cache.clearCache(doi);
+        this.props.kolmo.forceUpdate();
     }
 
     
@@ -124,8 +119,8 @@ export default class DataController extends Component {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#" onClick={() => this.flushDataExprs()}>
-                                { this.state.curIndex == this.state.dataExprStack.length -1 ? <MdCheck/> : <MdLayersClear/>}
+                            <a className="nav-link" href="#" onClick={() => this.flushCache()}>
+                                { cacheCheck ? <MdCheck/> : <MdLayersClear/>}
                             </a>
                         </li>
                         <li className="nav-link" style={constrainWidth}>

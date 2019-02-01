@@ -38,7 +38,7 @@ export default class RefPanel extends Component {
     }
 
     componentDidUpdate() {
-        if (this.props.dataExpr != this.state.oldExpr) {
+        if (this.props.dataExpr !== this.state.oldExpr) {
             this.setState({
                 executionRes : null,
                 oldExpr : this.props.dataExpr});
