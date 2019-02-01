@@ -4,6 +4,7 @@ import { GetDataExpressionByCID, ExpressionInCache, Execute } from '../store.js'
 import {MdCloudDownload, MdCloudDone, MdLayersClear, MdCheck} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
 import DataView from './DataView';
+import RefPanel from './RefPanel';
 
 const FitToParent = styled.div`
     display: block;
@@ -92,7 +93,11 @@ export default class DataController extends Component {
 
         let curExpr = this.props.kolmo.selected;
         let doi = curExpr.cids.SHA256;
-        const cacheCheck = (doi) => this.props.kolmo.cache.isCached(doi);
+        const cacheCheck = this.props.kolmo.cache.isCached(doi);
+        let content = "";
+        if (cacheCheck) {
+            content = new TextDecoder().decode(this.props.kolmo.cache.raw[doi].slice(0,100));
+        }
 
         let rootExpr = this.getRootExpr();
         return (
@@ -107,7 +112,7 @@ export default class DataController extends Component {
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="#">
-                                {  cacheCheck(doi) ? (
+                                {  cacheCheck ? (
                                     <span className="badge badge-success">
                                         <MdCloudDone /> Data object retrieved
                                     </span>
@@ -130,16 +135,16 @@ export default class DataController extends Component {
                         </li>
                     </div>
                 </div>
-                {this.state.cached ? 
+                { cacheCheck ? 
                         <div class="card mt-3 ml-3 mr-3">
                             <div class="card-body">
                                 <div class="card-text">
-                                    {this.state.cached}
+                                    { content }
                                 </div>
                             </div>
                         </div>
                 : "" }
-                <DataView onExecuteExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
+                <DataView kolmo={this.props.kolmo} onExecuteExpr={this.onExecuteExpr} onChangeCurExpr={this.onChangeCurExpr} expr={curExpr} />
             </div>
         );
     }

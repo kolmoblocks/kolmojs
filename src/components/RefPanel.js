@@ -26,7 +26,7 @@ const floatLeftCenter = {
     right: '70%',
 }
 
-export default class DataExpr extends Component {
+export default class RefPanel extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -64,56 +64,40 @@ export default class DataExpr extends Component {
         this.forceUpdate();
     }
 
-    async onSelectExpr(dataExpr) {
+    async onSelectExpr() {
         // when and expression is executed, call the api and set the new state
-        let response = {};
-        if (this.allDepsInCache()) {
-            await this.props.onExecuteExpr(dataExpr);
-            response['content'] = 'Successfully executed expression!'
-            response['status'] = 'success';
+        let {kolmo, expr} = this.props;
+        let doi = expr.cids.SHA256;
+        
+        let res = await kolmo.search4Raw(doi);
+        if (res.status !== "ok") {
+            return this.setState({
+                executionRes: {
+                    content: res.err,
+                    status: 'danger',
+                }
+            });
         }
-        else {
-            response['status'] = 'danger';
-            response['content'] = 'Dependencies must all be in cache!'
-        }
-        console.log("here!", response);
-        this.setState({executionRes : response});
+
+        this.setState({
+            executionRes: {
+                content: "Successfully retrieved the data object from the reference",
+                status: 'success',
+            }
+        });
+        kolmo.forceUpdate();
     }
 
     render() {
-        let { dataExpr, onChangeCurExpr } = this.props;
-        let type = dataExpr["type"];
-        let doKeys = Object.keys(dataExpr).filter(function(key) {
-            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cids);
-        });
-
-        return (
-            <div className="card mt-3">
+        return (<div className="card mt-3">
                 <div className="card-header">
-                    <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
-                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onSelectExpr(dataExpr)}>
-                        <MdPlayArrow/>
-                    </a>
-
+                    <span style={floatLeft}>Remote network reference</span>
+                    <span className="ml-2" style={floatLeft} onClick={() => this.onSelectExpr()}>
+                        <MdPlayArrow/> Fetch from network 
+                    </span>
                 </div>
                 <div className="card-body">
                     <ul className="list-group list-group-flush">
-                        { 
-                            doKeys.map((key) => (
-                                <li className="list-group-item">
-                                    <div style={floatLeft}>{JSON.stringify(key)}</div>
-                                    <div style={floatLeftCenter}>=</div>
-                                    <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[key])}>
-                                        {ExpressionInCache(dataExpr[key]) ? <MdCloudDone/> : <MdCloudDownload/>}
-                                    </a>
-                                    <a href="#" onClick={() => onChangeCurExpr(dataExpr[key]['cid'])} style={floatRight}>
-                                        <FitToParent>
-                                            {dataExpr[key]['cid']}
-                                        </FitToParent>
-                                    </a>
-                                </li>
-                            ))
-                        }
                     </ul>
                 </div>
                 {this.state.executionRes? 
@@ -123,7 +107,6 @@ export default class DataExpr extends Component {
                     </div>
                 </div>
                 : ""}
-            </div>
-        );
+            </div>);
     }
-}
+};

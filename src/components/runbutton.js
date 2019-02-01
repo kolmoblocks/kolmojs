@@ -10,8 +10,8 @@ class RunButton extends Component {
     actionClick() {
         var self = this;
         let {kolmo, funcy } = this.props;
-        this.props.kolmo[funcy.opcode](funcy.doi).then( function() {
-            self.props.megaupdate.forceUpdate();
+        kolmo[funcy.opcode](funcy.doi).then( function() {
+            kolmo.forceUpdate();
         });
     }
 

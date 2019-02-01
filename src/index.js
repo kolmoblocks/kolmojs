@@ -13,10 +13,8 @@ import kolmo from './kolmo';
 //     _label: 'blocks'
 // };
 
-
-let kolmoController = <App kolmo={kolmo} />;
-let refcntl = ReactDOM.render(kolmoController, document.getElementById('root'));
-
+let refcntl = ReactDOM.render( <App kolmo={kolmo} />, document.getElementById('root'));
+kolmo.forceUpdate = () => refcntl.forceUpdate();
 
 
 var interactives = document.querySelectorAll("div.interactive-canvas");

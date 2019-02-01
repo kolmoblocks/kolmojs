@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import DataExpr from './DataExpr';
+import RefPanel from './RefPanel';
+
 import PropTypes from 'prop-types';
 import {MdCloudDownload, MdCloudDone, MdLayersClear} from 'react-icons/md'; // possible failure in either
 import styled from 'styled-components';
@@ -7,6 +9,7 @@ import styled from 'styled-components';
 const floatLeft = {
     float: 'left'
 }
+
 const floatRight = {
     float: 'right'
 }
@@ -18,15 +21,14 @@ const floatCenter = {
 }
 
 export default class DataView extends Component {
-
     render() {
-        let { expr, onChangeCurExpr } = this.props;
+        let { kolmo, expr, onChangeCurExpr } = this.props;
         return (
             <div className="card-body">
                 <ul className="list-group list-group-flush">
                     {Object.keys(expr).map((key, index) => (
                         key == "cids" || key == "data_expressions" ? "" : 
-                            <li class="list-group-item">
+                            <li className="list-group-item">
                                 <div style={floatLeft}>{JSON.stringify(key)}</div>
                                 <div style={floatCenter}>=</div>
                                 <div style={floatRight}>{expr[key]}</div>
@@ -36,9 +38,14 @@ export default class DataView extends Component {
                 </ul>
                 {
                     expr['data_expressions'] ? 
-                        expr.data_expressions.map((dataExpr) => (
-                            <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />
-                        ))
+                        expr.data_expressions.map(function(dataExpr) {
+                            switch(dataExpr.type) {
+                                case "ref":
+                                    return <RefPanel kolmo={kolmo} expr={expr} />;           
+                                default:
+                                    return <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />;
+                            };
+                        })
                         : <div />
                 }
             </div>

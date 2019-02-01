@@ -111,6 +111,16 @@ class Kolmo {
         this.cache.metaInfo[doi] = opAct.metaInfo;
         return opAct;
     }
+
+
+    async search4Raw(doi) {
+        let opAct = await this.remote.search4Raw(doi);
+        if (opAct.status != "ok") {
+            return opAct;
+        }
+        this.cache.raw[doi] = opAct.do;
+        return opAct;
+    }
 }
 
 let kolmo = new Kolmo({
