@@ -79,10 +79,10 @@ class Cache {
                             "wasm" : {
                                 "cid" : "_wasm_concat_"
                             },
-                            "arg1" : {
+                            0 : {
                                 "cid" : "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
                             },
-                            "arg2" : {
+                            1 : {
                                 "cid" : "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E"
                             }
                         }
@@ -131,6 +131,76 @@ class Kolmo {
         }
         this.cache.raw[doi] = opAct.do;
         return opAct;
+    }
+
+    async execWasm(doi, expr) {
+        let opAct = {
+            opAct: "execWasm",
+            args: [doi],
+        };
+
+        let args = [];
+        while (expr[args.length]) {
+            let cache = this.kolmo.cache.raw[expr[args.length].cid];
+            if (!cache) {
+                return {
+                    ...opAct,
+                    status: "not all args are retrieved",
+                };
+            }
+            args.push(cache);
+        }
+
+        let rawWasm = this.kolmo.cache.raw[expr.wasm.cid];
+        if (!rawWasm) {
+            return {
+                ...opAct,
+                status: "wasm not retrieved",
+            };
+        }
+
+        try {
+            var wasmModule = await new WebAssembly.Module(rawWasm);
+            var wasmInstance = await new WebAssembly.Instance(wasmModule, []);
+            
+            // fill args
+            for ( var arg in this.args ) {
+                var size = this.args[arg].length;
+                var pointer = wasmInstance.exports.set_arg(arg, size);
+                var pWasmData = new Uint8ClampedArray(wasmInstance.exports.memory.buffer, pointer, size);
+                for (var i = 0; i < pWasmData.length; i++) {
+                    pWasmData[i] = this.args[arg][i];
+                }
+            }
+            
+            if ( !wasmInstance.exports.exec() ) {
+                return {
+                    ...opAct,
+                    status: "wasm execution internal error",
+                    err: "wasm execution internal error",
+                }
+            }
+
+            // get result
+            var outSize = wasmInstance.exports.get_result_size();
+            var outPointer = wasmInstance.exports.get_result();
+            var pResultData = new Uint8ClampedArray(wasmInstance.exports.memory.buffer, outPointer, outSize);
+            let result = [];
+            for (var i = 0; i < pResultData.length; i++) {
+                result.push(pResultData[i]);
+                }
+                return {
+                   ...opAct,
+                   status: "ok",
+                   result: result,
+                }
+            } catch(error) {
+                return {
+                    ...opAct,
+                    status: "error",
+                    err: error,
+                }
+        }
     }
 }
 

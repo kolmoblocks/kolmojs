@@ -64,7 +64,16 @@ export default class DataExpr extends Component {
         this.forceUpdate();
     }
 
-    async onSelectExpr(dataExpr) {
+    async onSelectExpr() {
+        let { dataExpr, kolmo } = this.props;
+        const cacheCheck = (doi) => this.props.kolmo.cache.isCached(doi);
+
+        let type = dataExpr["type"];
+        let doKeys = Object.keys(dataExpr).filter(function(key) {
+            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cid);
+        });
+
+
         // when and expression is executed, call the api and set the new state
         let response = {};
         if (this.allDepsInCache()) {
@@ -80,8 +89,23 @@ export default class DataExpr extends Component {
         this.setState({executionRes : response});
     }
 
+    async selectDep(cid) {
+        let { kolmo } = this.props;
+        if (!kolmo.cache.metaInfo[cid]) {
+            let res = await kolmo.search4MetaInfo(cid);
+            console.log("here is what we requested: ", cid, res);
+            if (res.status !== 'ok') {
+                return
+            }
+        }
+        kolmo.selected = cid;
+        kolmo.forceUpdate();
+    }
+
     render() {
-        let { dataExpr, onChangeCurExpr } = this.props;
+        let { dataExpr, onChangeCurExpr, kolmo } = this.props;
+        const cacheCheck = (doi) => this.props.kolmo.cache.isCached(doi);
+
         let type = dataExpr["type"];
         let doKeys = Object.keys(dataExpr).filter(function(key) {
             return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cid);
@@ -91,7 +115,7 @@ export default class DataExpr extends Component {
             <div className="card mt-3">
                 <div className="card-header">
                     <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
-                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onSelectExpr(dataExpr)}>
+                    <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onSelectExpr()}>
                         <MdPlayArrow/> Execute the formula
                     </a>
 
@@ -103,10 +127,10 @@ export default class DataExpr extends Component {
                                 <li className="list-group-item">
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
-                                    <a className="ml-2" href="#" style={floatRight} onClick={() => this.cacheExpression(dataExpr[key])}>
-                                        {ExpressionInCache(dataExpr[key]) ? <MdCloudDone/> : <MdCloudDownload/>}
+                                    <a className="ml-2" href="#" style={floatRight}>
+                                        { cacheCheck(dataExpr[key].cid) ? <MdCloudDone/> : <MdCloudDownload/>}
                                     </a>
-                                    <a href="#" onClick={() => onChangeCurExpr(dataExpr[key]['cid'])} style={floatRight}>
+                                    <a href="#" onClick={() => this.selectDep(dataExpr[key].cid) } style={floatRight}>
                                         <FitToParent>
                                             {dataExpr[key]['cid']}
                                         </FitToParent>
