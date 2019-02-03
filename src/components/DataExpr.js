@@ -65,28 +65,20 @@ export default class DataExpr extends Component {
     }
 
     async onSelectExpr() {
-        let { dataExpr, kolmo } = this.props;
-        const cacheCheck = (doi) => this.props.kolmo.cache.isCached(doi);
-
-        let type = dataExpr["type"];
-        let doKeys = Object.keys(dataExpr).filter(function(key) {
-            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cid);
-        });
-
-
-        // when and expression is executed, call the api and set the new state
+        let { dataExpr, kolmo, dataobject } = this.props;
+        let res = await kolmo.execWasm(dataobject.cids.SHA256, dataExpr);
+        console.log("this is the response:", res);
         let response = {};
-        if (this.allDepsInCache()) {
-            await this.props.onExecuteExpr(dataExpr);
+        if (res.status === "ok") {
             response['content'] = 'Successfully executed expression!'
             response['status'] = 'success';
         }
         else {
-            response['status'] = 'danger';
-            response['content'] = 'Dependencies must all be in cache!'
+            response['status'] = "danger";
+            response['content'] = res.status;
         }
-        console.log("here!", response);
         this.setState({executionRes : response});
+        kolmo.forceUpdate();
     }
 
     async selectDep(cid) {
@@ -127,8 +119,16 @@ export default class DataExpr extends Component {
                                 <li className="list-group-item">
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
-                                    <a className="ml-2" href="#" style={floatRight}>
-                                        { cacheCheck(dataExpr[key].cid) ? <MdCloudDone/> : <MdCloudDownload/>}
+                                    <a className="ml-2" style={floatRight}>
+                                    {  cacheCheck(key) ? (
+                                        <span className="badge badge-success">
+                                            <MdCloudDone />
+                                        </span>
+                                    ) : (
+                                        <span className="badge badge-danger">
+                                        <MdCloudDownload/>
+                                        </span>
+                                    )}
                                     </a>
                                     <a href="#" onClick={() => this.selectDep(dataExpr[key].cid) } style={floatRight}>
                                         <FitToParent>

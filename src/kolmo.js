@@ -141,7 +141,7 @@ class Kolmo {
 
         let args = [];
         while (expr[args.length]) {
-            let cache = this.kolmo.cache.raw[expr[args.length].cid];
+            let cache = this.cache.raw[expr[args.length].cid];
             if (!cache) {
                 return {
                     ...opAct,
@@ -151,11 +151,12 @@ class Kolmo {
             args.push(cache);
         }
 
-        let rawWasm = this.kolmo.cache.raw[expr.wasm.cid];
+        let rawWasm = this.cache.raw[expr.wasm.cid];
         if (!rawWasm) {
             return {
                 ...opAct,
                 status: "wasm not retrieved",
+                err: "wasm not retrieved",
             };
         }
 
@@ -188,12 +189,14 @@ class Kolmo {
             let result = [];
             for (var i = 0; i < pResultData.length; i++) {
                 result.push(pResultData[i]);
-                }
-                return {
-                   ...opAct,
-                   status: "ok",
-                   result: result,
-                }
+            }
+
+            this.cache.raw[doi] = result;
+            return {
+                ...opAct,
+                status: "ok",
+                result: result,
+            }
             } catch(error) {
                 return {
                     ...opAct,
