@@ -84,7 +84,7 @@ export default class DataExpr extends Component {
         let { dataExpr, onChangeCurExpr } = this.props;
         let type = dataExpr["type"];
         let doKeys = Object.keys(dataExpr).filter(function(key) {
-            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cids);
+            return ((typeof(dataExpr[key]) === "object") && dataExpr[key].cid);
         });
 
         return (
@@ -92,7 +92,7 @@ export default class DataExpr extends Component {
                 <div className="card-header">
                     <span style={floatLeft}>Expression Type: {JSON.stringify(type)}</span>
                     <a className="ml-2" style={floatLeft} href="#" onClick={() => this.onSelectExpr(dataExpr)}>
-                        <MdPlayArrow/>
+                        <MdPlayArrow/> Execute the formula
                     </a>
 
                 </div>

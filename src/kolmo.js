@@ -72,11 +72,22 @@ class Cache {
                         "SHA256": "e5a6f707c19480993e600d1d765450660745e0ae5919a40f8a013fa8ebb538cd"
                     },
                     "size": 9,
-                    "data_expressions": [{
-                        "type": "ref"
+                    "data_expressions": [
+                        {"type": "ref"},
+                        {
+                            "type": "exec",
+                            "wasm" : {
+                                "cid" : "_wasm_concat_"
+                            },
+                            "arg1" : {
+                                "cid" : "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+                            },
+                            "arg2" : {
+                                "cid" : "B493D48364AFE44D11C0165CF470A4164D1E2609911EF998BE868D46ADE3DE4E"
+                            }
                         }
                     ]
-                }
+                },
         };
         this.raw = {};
     }

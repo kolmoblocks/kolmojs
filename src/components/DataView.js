@@ -43,7 +43,7 @@ export default class DataView extends Component {
                                 case "ref":
                                     return <RefPanel kolmo={kolmo} expr={expr} />;           
                                 default:
-                                    return <DataExpr dataExpr={dataExpr} onExecuteExpr={this.props.onExecuteExpr} onChangeCurExpr={onChangeCurExpr} />;
+                                    return <DataExpr kolmo={kolmo} dataExpr={dataExpr} dataobject={expr} />;
                             };
                         })
                         : <div />
