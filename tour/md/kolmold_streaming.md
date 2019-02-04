@@ -1,7 +1,7 @@
 # How KolmoLD can benefit streaming media
 
 KolmoLD can also be applied to streaming media. 
-Suppose we are streaming a video at 360 off of a site that uses adaptive bitrate streaming.
+Suppose we are streaming a video at 360p off of a site that uses adaptive bitrate streaming.
 Our buffer will hold a few 360p frames to prevent stalling. Once the video player detects that our network could support 720p, our 360p frames in buffer will be discarded. 
 
 With the help of KolmoLD, we can avoid having to discard the buffered frames. 
