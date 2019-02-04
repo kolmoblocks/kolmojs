@@ -4,18 +4,17 @@ KolmoLD is a network protocol that rethinks the tech stack behind the modern int
 
 The tech stack that powers the internet (IP, TCP, BGP) relies on the model where a internet resource runs on its own machine:
 
-```
+<img src="../TraditionalInternet.png" alt="Traditional Internet Model" height="330" align="left" hspace="20" />
+<img src="../CDNBasedInternet.png" alt="CDN-centric Internet Model" height="330" align="right" hspace="20" />
 
-
-```
-
-Within that model, the internet resource and the network identity of the computer it runs on is interchangable. 
+<br />
+Within that model, the internet resource and the network identity of the computer it runs on is interchangable.
 
 As the internet evolved, limitations of that approach became apparent. The industry moved towards distributed systems, where ainternetb resource is run on multiple machines.
 
 Such an approach is dictated by the following requirements:
 
-1. Scalability: a internet resource's workload does not fit in a single computer [1]  
+1. Scalability: a internet resource's workload does not fit in a single computer [1]
 2. Edge hosting: performance engineering requires hostinginternetb resources as geographically close to the consumer as possible [2]
 
 The art of distributed web system is building a distributed system that behave as if it was fitting the single computer - singleinternetb resource pattern [1]. Multiple challenges and limitations in the domain stem from this limitation.
