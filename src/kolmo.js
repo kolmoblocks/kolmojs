@@ -114,12 +114,12 @@ class Kolmo {
                 }
             }
         }
-        this.selected = this.cache.metaInfo[doi];
         let opAct = await this.remote.search4MetaInfo(doi);
-        if (opAct.status != "ok") {
+        if (opAct.status !== "ok") {
             return opAct;
         }
         this.cache.metaInfo[doi] = opAct.metaInfo;
+        console.log("I AM A HONEY BUNNY:", this.cache.metaInfo);
         return opAct;
     }
 
@@ -204,6 +204,16 @@ class Kolmo {
                     err: error,
                 }
         }
+    }
+
+    async setSelected(doi) {
+        if (!this.cache.metaInfo[doi]) {
+            let res = await this.search4MetaInfo(doi);
+            if (res.status !== "ok") {
+                return res
+            }
+        }
+        this.selected = doi;
     }
 }
 

@@ -81,12 +81,12 @@ export default class DataController extends Component {
         if (!this.props.kolmo.selected) {
             return (<div id="dataController" className="card">
                 <div className="card-header">
-                    Nothing selected
+                    Select a data object to start
                 </div>
             </div>)
         }
 
-        let curExpr = this.props.kolmo.selected;
+        let curExpr = this.props.kolmo.cache.metaInfo[this.props.kolmo.selected];
         let doi = curExpr.cids.SHA256;
         const cacheCheck = this.props.kolmo.cache.isCached(doi);
         let content = "";

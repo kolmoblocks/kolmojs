@@ -41,7 +41,7 @@ class Demo extends Component {
 
   render() {
     return (
-        <DataController kolmo={this.props.kolmo} rootExpr={this.state.rootExpr} />
+        <DataController kolmo={this.props.kolmo} />
     );
   }
 }

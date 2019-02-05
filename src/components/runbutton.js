@@ -7,12 +7,11 @@ class RunButton extends Component {
         this.actionClick = this.actionClick.bind(this);
     }
 
-    actionClick() {
-        var self = this;
+    async actionClick() {
         let {kolmo, funcy } = this.props;
-        kolmo[funcy.opcode](funcy.doi).then( function() {
-            kolmo.forceUpdate();
-        });
+        let res = await kolmo[funcy.opcode](funcy.doi);
+        await kolmo.setSelected(funcy.doi);
+        kolmo.forceUpdate();
     }
 
     render() {

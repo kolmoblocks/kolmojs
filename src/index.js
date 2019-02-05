@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import RunButton from './components/runbutton';
+import RefreshButton from './components/refreshbutton';
+
 import * as serviceWorker from './serviceWorker';
 import kolmo from './kolmo';
 
@@ -25,6 +27,8 @@ interactives.forEach(function(interactivePanel) {
     var funcy = JSON.parse(textEl);
     ReactDOM.render(<RunButton kolmo={kolmo} megaupdate={refcntl}  funcy={funcy} />, buttonElement);
 });
+
+ReactDOM.render(<RefreshButton kolmo={kolmo} />, document.getElementById("refresher-b"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

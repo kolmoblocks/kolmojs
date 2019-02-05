@@ -83,14 +83,7 @@ export default class DataExpr extends Component {
 
     async selectDep(cid) {
         let { kolmo } = this.props;
-        if (!kolmo.cache.metaInfo[cid]) {
-            let res = await kolmo.search4MetaInfo(cid);
-            console.log("here is what we requested: ", cid, res);
-            if (res.status !== 'ok') {
-                return
-            }
-        }
-        kolmo.selected = cid;
+        await kolmo.setSelected(cid);
         kolmo.forceUpdate();
     }
 
