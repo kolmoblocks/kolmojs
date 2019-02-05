@@ -42,6 +42,8 @@
                     <a class="nav-link" id="v-1hello-tab" data-toggle="pill" href="#v-1hello" role="tab" aria-controls="v-1hello" aria-selected="false">hello, kolmoLD</a>
                     <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Basics</a>
                     <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Message types</a>
+                    <a class="nav-link" id="v-pills-adaptive-tab" data-toggle="pill" href="#v-pills-adaptive" role="tab" aria-controls="v-pills-adaptive" aria-selected="false">Adaptive video</a>
+
                 </div>
               </div>
               <div class="col-6 text panel panel-default well">
@@ -55,6 +57,9 @@
                   </div>
                   <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
                       {{template "3_kolmold_ops.html" .}}
+                  </div>
+                  <div class="tab-pane fade" id="v-pills-adaptive" role="tabpanel" aria-labelledby="v-pills-adaptive-tab">
+                      {{template "5_adaptive_video.html" .}}
                   </div>
                 </div>
               </div>

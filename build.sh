@@ -1,6 +1,6 @@
 go run build_tour.go
-rm -rf build
-mkdir build
+mkdir -p build
 cp src/kolmo.js build/kolmo.js
 cp src/kolmo.css build/kolmo.css
 npm run-script  build
+cp figures/* build

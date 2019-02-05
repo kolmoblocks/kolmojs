@@ -7,7 +7,7 @@ Our buffer will hold a few 360p frames to prevent stalling. Once the video playe
 With the help of KolmoLD, we can avoid having to discard the buffered frames. 
 Data expressions provide many ways for us to formulate our desired higher resolution frame. 
 
-![Streaming Diagram](streaming_diagram.jpg)
+![Streaming Diagram](./streaming_diagram.png)
 
 In this example, we would like to upgrade our 360p BMP to 720p BMP.
 Two data expressions are provided to formulate the 720p BMP:
@@ -16,6 +16,16 @@ Two data expressions are provided to formulate the 720p BMP:
 
 
 
+
+<div class="interactive-canvas">
+    <pre class="demo-canvas pre-scrollable">
+    {   
+        "opcode": "search4MetaInfo",
+        "doi": "_put in the adaptive video example hash_"
+    }
+    </pre>
+    <span class="button-placeholder"></span>
+</div>
 
 
 
