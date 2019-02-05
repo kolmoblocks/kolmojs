@@ -47,7 +47,7 @@ export default class DataController extends Component {
     }
 
     async flushCache() {
-        let doi = this.props.kolmo.selected.cids.SHA256;
+        let doi = this.props.kolmo.selected;
         this.props.kolmo.cache.clearCache(doi);
         this.props.kolmo.forceUpdate();
     }

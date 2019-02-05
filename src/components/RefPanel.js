@@ -92,8 +92,8 @@ export default class RefPanel extends Component {
         return (<div className="card mt-3">
                 <div className="card-header">
                     <span style={floatLeft}>Remote network reference</span>
-                    <span className="ml-2" href="#" style={floatLeft} onClick={() => this.onSelectExpr()}>
-                        <MdPlayArrow/> Fetch from network 
+                    <span className="ml-2" style={floatLeft} onClick={() => this.onSelectExpr()}>
+                    <a href="#"><MdPlayArrow/> Fetch from network </a>
                     </span>
                 </div>
                 <div className="card-body">

@@ -113,7 +113,7 @@ export default class DataExpr extends Component {
                                     <div style={floatLeft}>{JSON.stringify(key)}</div>
                                     <div style={floatLeftCenter}>=</div>
                                     <a className="ml-2" style={floatRight}>
-                                    {  cacheCheck(key) ? (
+                                    {  cacheCheck(dataExpr[key].cid) ? (
                                         <span className="badge badge-success">
                                             <MdCloudDone />
                                         </span>

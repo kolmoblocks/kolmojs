@@ -119,14 +119,13 @@ class Kolmo {
             return opAct;
         }
         this.cache.metaInfo[doi] = opAct.metaInfo;
-        console.log("I AM A HONEY BUNNY:", this.cache.metaInfo);
         return opAct;
     }
 
 
     async search4Raw(doi) {
         let opAct = await this.remote.search4Raw(doi);
-        if (opAct.status != "ok") {
+        if (opAct.status !== "ok") {
             return opAct;
         }
         this.cache.raw[doi] = opAct.do;
@@ -140,12 +139,13 @@ class Kolmo {
         };
 
         let args = [];
-        while (expr[args.length]) {
-            let cache = this.cache.raw[expr[args.length].cid];
+        while (expr[args.length+ ""]) {
+            let cache = this.cache.raw[expr[args.length+""].cid];
+            console.log("looking up things before execing", args);
             if (!cache) {
                 return {
                     ...opAct,
-                    status: "not all args are retrieved",
+                    status: "input data block \"" +  args.length+ "\" are retrieved",
                 };
             }
             args.push(cache);
@@ -165,12 +165,14 @@ class Kolmo {
             var wasmInstance = await new WebAssembly.Instance(wasmModule, []);
             
             // fill args
-            for ( var arg in this.args ) {
-                var size = this.args[arg].length;
+            for ( var arg in args ) {
+                var size = args[arg].byteLength;
+                console.log("CHEESE ARGS [ size: ", size, "]  and arg: [", arg, "]");
                 var pointer = wasmInstance.exports.set_arg(arg, size);
-                var pWasmData = new Uint8ClampedArray(wasmInstance.exports.memory.buffer, pointer, size);
+                let convertedInput = new Uint8Array(args[arg], 0, size);
+                var pWasmData = new Uint8Array(wasmInstance.exports.memory.buffer, pointer, size);
                 for (var i = 0; i < pWasmData.length; i++) {
-                    pWasmData[i] = this.args[arg][i];
+                    pWasmData[i] = convertedInput[i];
                 }
             }
             
@@ -185,10 +187,10 @@ class Kolmo {
             // get result
             var outSize = wasmInstance.exports.get_result_size();
             var outPointer = wasmInstance.exports.get_result();
-            var pResultData = new Uint8ClampedArray(wasmInstance.exports.memory.buffer, outPointer, outSize);
-            let result = [];
+            var pResultData = new Uint8Array(wasmInstance.exports.memory.buffer, outPointer, outSize);
+            let result = new Uint8Array(outSize);
             for (var i = 0; i < pResultData.length; i++) {
-                result.push(pResultData[i]);
+                result[i] = pResultData[i];
             }
 
             this.cache.raw[doi] = result;
@@ -197,6 +199,7 @@ class Kolmo {
                 status: "ok",
                 result: result,
             }
+            
             } catch(error) {
                 return {
                     ...opAct,
