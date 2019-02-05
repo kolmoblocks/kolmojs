@@ -21,7 +21,7 @@ Two data expressions are provided to formulate the 720p BMP:
     <pre class="demo-canvas pre-scrollable">
     {   
         "opcode": "search4MetaInfo",
-        "doi": "_put in the adaptive video example hash_"
+        "doi": "e15ff01f648aadac92c7f8f457c4b9230844e98a1763c2012f9244f27707c242"
     }
     </pre>
     <span class="button-placeholder"></span>
