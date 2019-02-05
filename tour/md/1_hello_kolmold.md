@@ -4,16 +4,19 @@ KolmoLD is a network protocol that rethinks the tech stack behind the modern int
 
 The tech stack that powers the internet (IP, TCP, BGP) relies on the model where a internet resource runs on its own machine (Fig. 1).
 
+
 <div width=100%>
 <span style="font-size:80%; text-align:center;display:inline-block; width:540px">
-    <img src="../TraditionalInternet.png" alt="Traditional Internet Model" hspace="20" style="width:500px;padding-bottom:0.5em;" />
+    <img src="./TraditionalInternet.png" alt="Traditional Internet Model" hspace="20" style="width:500px;padding-bottom:0.5em;" />
     Fig. 1: Traditional Internet Model: each resource maps to a single server.
 </span>
 <span style="font-size:80%; text-align:center;display:inline-block; width:540px">
-    <img src="../CDNBasedInternet.png" alt="CDN-centric Internet Model" hspace="20" style="width:500px;padding-bottom:0.5em;" />
+    <img src="./CDNBasedInternet.png" alt="CDN-centric Internet Model" hspace="20" style="width:500px;padding-bottom:0.5em;" />
     Fig. 2: CDN-centric Internet Model: resources map to geographically diverse servers.
 </span>
 </div>
+
+
 
 Within that model, the Internet resource, and the network identity of the computer it runs on, is interchangable.
 
