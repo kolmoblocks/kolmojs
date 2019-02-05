@@ -1,0 +1,21 @@
+# Deploying custom encoding/compression algorithm
+
+KolmoLD allows for delivering the data along with the code to decode it.
+
+That means being able to support custom or brand new files formats in short time without waiting implementation in the browsers.
+
+For example, new modern image format WebP does't supported in all browsers, insted of jpeg. For that case you can create a WebAssembly transcoder
+for converting WebP to jpeg on client side in browser there it needed.
+
+<div class="interactive-canvas">
+    <pre class="demo-canvas pre-scrollable">
+    {   
+        "opcode": "search4MetaInfo",
+        "doi": "7E1D8D6609499A1A5FB67C6B9E7DD34CF7C6C4355259115FC7161F47266F5F3C"
+    }
+    </pre>
+    <span class="button-placeholder"></span>
+</div>
+
+
+

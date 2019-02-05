@@ -43,6 +43,9 @@
                     <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Basics</a>
                     <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Message types</a>
                     <a class="nav-link" id="v-pills-adaptive-tab" data-toggle="pill" href="#v-pills-adaptive" role="tab" aria-controls="v-pills-adaptive" aria-selected="false">Adaptive video</a>
+                    <a class="nav-link" id="v-pills-zip-tab" data-toggle="pill" href="#v-pills-zip" role="tab" aria-controls="v-pills-zip" aria-selected="false">Deploying custom compression algorithms</a>
+                    <a class="nav-link" id="v-pills-huffman-tab" data-toggle="pill" href="#v-pills-huffman" role="tab" aria-controls="v-pills-huffman" aria-selected="false">Reusing statistical model data structures</a>
+
 
                 </div>
               </div>
@@ -61,6 +64,12 @@
                   <div class="tab-pane fade" id="v-pills-adaptive" role="tabpanel" aria-labelledby="v-pills-adaptive-tab">
                       {{template "5_adaptive_video.html" .}}
                   </div>
+                  <div class="tab-pane fade" id="v-pills-zip" role="tabpanel" aria-labelledby="v-pills-zip-tab">
+                    {{ template "zip.html" .}}
+                </div>
+                <div class="tab-pane fade" id="v-pills-huffman" role="tabpanel" aria-labelledby="v-pills-huffman-tab">
+                  {{ template "huffman.html" .}}
+              </div>
                 </div>
               </div>
 

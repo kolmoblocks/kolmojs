@@ -32,6 +32,9 @@
                     <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Basics</a>
                     <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Message types</a>
                     <a class="nav-link" id="v-pills-adaptive-tab" data-toggle="pill" href="#v-pills-adaptive" role="tab" aria-controls="v-pills-adaptive" aria-selected="false">Adaptive video</a>
+                    <a class="nav-link" id="v-pills-zip-tab" data-toggle="pill" href="#v-pills-zip" role="tab" aria-controls="v-pills-zip" aria-selected="false">Deploying custom compression algorithms</a>
+                    <a class="nav-link" id="v-pills-huffman-tab" data-toggle="pill" href="#v-pills-huffman" role="tab" aria-controls="v-pills-huffman" aria-selected="false">Reusing statistical model data structures</a>
+
 
                 </div>
               </div>
@@ -185,6 +188,47 @@ Two data expressions are provided to formulate the 720p BMP:
 </div>
 
                   </div>
+                  <div class="tab-pane fade" id="v-pills-zip" role="tabpanel" aria-labelledby="v-pills-zip-tab">
+                    <h1>Deploying custom encoding/compression algorithm</h1>
+
+<p>KolmoLD allows for delivering the data along with the code to decode it.</p>
+
+<p>That means being able to support custom or brand new files formats in short time without waiting implementation in the browsers.</p>
+
+<p>For example, new modern image format WebP does&rsquo;t supported in all browsers, insted of jpeg. For that case you can create a WebAssembly transcoder
+for converting WebP to jpeg on client side in browser there it needed.</p>
+
+<div class="interactive-canvas">
+    <pre class="demo-canvas pre-scrollable">
+    {   
+        "opcode": "search4MetaInfo",
+        "doi": "7E1D8D6609499A1A5FB67C6B9E7DD34CF7C6C4355259115FC7161F47266F5F3C"
+    }
+    </pre>
+    <span class="button-placeholder"></span>
+</div>
+
+                </div>
+                <div class="tab-pane fade" id="v-pills-huffman" role="tabpanel" aria-labelledby="v-pills-huffman-tab">
+                  <h1>Reusing statistical model data structures</h1>
+
+<p>KolmoLD allows reduce downloading data for data structures that can be statisticaly analized for best compression.</p>
+
+<p>For example, statistic analyze of English language books allow build a best common dictionary for this kind of books and give a best compression ration for this type of content.</p>
+
+<p>Huffman is such a great thing.</p>
+
+<div class="interactive-canvas">
+    <pre class="demo-canvas pre-scrollable">
+    {   
+        "opcode": "search4MetaInfo",
+        "doi": "11111117c19480993e600d1d765450660745e0ae5919a40f8a013fa8ebb538cd"
+    }
+    </pre>
+    <span class="button-placeholder"></span>
+</div>
+
+              </div>
                 </div>
               </div>
 
